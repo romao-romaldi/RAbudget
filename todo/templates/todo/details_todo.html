@@ -1,0 +1,136 @@
+<div class="py-4 flex flex-col gap-6">
+    <div>
+        <h3 class="font-bold">DETAILS DE LA TACHE</h3>
+    </div>
+    <form class="flex flex-col gap-4">
+        <div>
+            <label for="statuts" class="block text-lg font-bold text-gray-600">Validateurs</label>
+            <div x-data="{ statuts: [] }" class="flex justify-between gap-2 text-sm font-bold">
+                <!-- Ajoute d'autres responsables si besoin -->
+                <label 
+                    for="statut3"
+                    :class="statuts.includes('waiting') ? 'border-cyan-500 bg-cyan-50' : 'border bg-white'"
+                    class="flex items-center space-x-2 rounded-lg px-2 py-1 cursor-pointer transition-colors duration-200 mt-2"
+                >
+                    
+                    <span class="text-sm">A faire</span>
+                    <input
+                        type="checkbox"
+                        id="statut3"
+                        name="status"
+                        value="waiting"
+                        class="hidden"
+                        :disabled="statuts.includes('waiting') ? true : false"
+                        x-model="statuts"
+                    />
+                </label>
+    
+                <label
+                    for="statuts4"
+                    :class="statuts.includes('inprocessing') ? 'border-cyan-500 bg-cyan-50' : 'border bg-white'"
+                    class="flex items-center space-x-2 rounded-lg px-2 py-1 cursor-pointer transition-colors duration-200 mt-2"
+                >
+                    
+                    <span class="text-sm">En cours</span>
+                    <input
+                        type="checkbox"
+                        id="statuts4"
+                        name="status"
+                        value="inprocessing"
+                        :disabled="statuts.includes('inprocessing') ? true : false"
+                        class="hidden"
+                        x-model="statuts"
+                    />
+                </label>
+    
+                <label
+                    for="statuts5"
+                    :class="statuts.includes('completed') ? 'border-cyan-500 bg-cyan-50' : 'border bg-white'"
+                    class="flex items-center space-x-2 rounded-lg px-2 py-1 cursor-pointer transition-colors duration-200 mt-2"
+                >
+                    
+                    <span class="text-sm">Terminée</span>
+                    <input
+                        type="checkbox"
+                        id="statuts5"
+                        name="status"
+                        value="completed"
+                        :disabled="statuts.includes('completed') ? true : false"
+                        class="hidden"
+                        x-model="statuts"
+                    />
+                </label>
+            </div>
+        </div>
+    
+    
+        <div>
+            <!-- <label for="taskName" class="block text-sm font-medium text-gray-700">Nom de la Tâche</label> -->
+            <input type="text" id="taskName" name="taskName" disabled
+            required class="mt-1 block w-full border-0 border-gray-300 rounded-md shadow-sm focus:border-indigo-500
+                focus:ring-indigo-500 font-bold text-xl sm:text-sm"
+                placeholder="Entrez le nom de la tâche ici...">
+        </div>
+        <div class="mt-4">
+            <!-- <label for="taskDescription" class="block text-sm font-medium text-gray-700">Description</label> -->
+            <textarea id="taskDescription" name="taskDescription" rows="8"  disabled
+            required class="mt-1 block w-full border-0 border-gray-300 rounded-md shadow-sm focus:border-indigo-500
+                focus:ring-indigo-500 sm:text-sm "
+                placeholder="Entrez la description de la tâche ici..."
+                ></textarea>
+        </div>
+        <div>
+            <div class="flex flex-col" disabled>
+                <label for="">date realisation et heure (facultatif)</label>
+                <input type="datetime-local">
+            </div>
+    
+        </div>
+    
+        <div class="mt-4">
+            <label for="taskPriority" class="block text-lg font-bold text-gray-600">Priorité</label>
+            <div class="mt-2">
+                <label class="flex items-start p-2 text-xs space-x-3 bg-white border rounded-md shadow-sm
+                 hover:bg-gray-50 border-neutral-200/70">
+                    <span class="relative flex flex-col text-left space-y-1.5 leading-none">
+                        <span x-text="option.title" class="font-semibold"></span>
+                    </span>
+                </label>
+            </div>
+        </div>
+    
+        <div>
+            <div for="responsable" class="block text-lg font-bold text-gray-600">Responsables</div>
+            <label 
+               
+                class="flex items-center space-x-2 rounded-lg px-2 py-1 cursor-pointer transition-colors duration-200 mt-2"
+            >
+                <span class="h-10 w-10 rounded-full border bg-zinc-200 flex items-center justify-center overflow-hidden">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Utilisateur 3" class="h-10 w-10 rounded-full object-cover" />
+                </span>
+                <span class="text-sm">Utilisateur 3</span>
+                
+            </label>
+        </div>
+    
+        <div>
+            <div for="validateur" class="block text-lg font-bold text-gray-600">Validateurs</div>
+            <label 
+               
+                class="flex items-center space-x-2 rounded-lg px-2 py-1 cursor-pointer transition-colors duration-200 mt-2"
+            >
+                <span class="h-10 w-10 rounded-full border bg-zinc-200 flex items-center justify-center overflow-hidden">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Utilisateur 3" class="h-10 w-10 rounded-full object-cover" />
+                </span>
+                <span class="text-sm">Utilisateur 3</span>
+                
+            </label>
+        </div>
+    
+        <div>
+                <button class="w-full border border-blue-600 hover:border-blue-700 py-2 rounded-sm">Ajouter un commentaire</button>
+                <button class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-sm">Valider</button>
+        </div>
+    
+    </form>
+</div>

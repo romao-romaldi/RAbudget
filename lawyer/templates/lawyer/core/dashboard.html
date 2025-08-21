@@ -1,0 +1,270 @@
+{% extends "lawyer/core/base_dashboard.html" %}
+{% load static %}
+
+{% block content %}
+  <div class="flex flex-col gap-3 px-3 ">
+    <div class="md:hidden">
+        <h1>Dashboard</h1>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
+      <div class="md:col-span-9 min-h-[calc(100vh-5rem)] bg-white p-4">
+          <h1 class="max-sm:hidden md:block text-lg font-semibold">Dashboard</h1>
+          {% comment %}
+            corps dashboard
+          {% endcomment %}
+          <section class="min-h-[calc(100%-3rem)] grid grid-rows-2 gap-4 py-3">
+              <section class=" flex  flex-col gap-3  border border-blue-800 px-3 py-2
+              rounded-md">
+                  <div>
+                    <h3 class="text-base font-semibold">Mes activités récentes</h3>
+                  </div>
+                  <div class="flex flex-col ">
+                    <div class="grid grid-cols-12">
+                        <div class="flex flex-col items-center">
+                            <div class="h-7 w-7 rounded-full bg-gray-300">
+                            </div>
+                            <span class="w-1 min-h-[calc(100%-1.75rem)] bg-gray-300 ">
+                            </span>
+                        </div>
+
+                        <div class="col-span-11 bg-gray-200 px-3 rounded-md py-1 mb-4">
+                            <div class="flex flex-col gap-3 pb-2">
+                              <div class="flex justify-between ">
+                                <h4 class="font-semibold text-blue-800">Réunion</h4>
+                                <div class="text-sm flex  gap-2 items-center">
+                                  <span class="w-4 h-4 rounded-full bg-black "></span> <span>25 juillet 2025</span> 
+                                </div>
+                              </div>
+
+                              <div class="flex gap-3 items-center">
+                                <div class="flex flex-wrap px-3 py-1 bg-gray-100 rounded-md text-sm"><p>Préparation de la réunion avec le client</p></div>
+                              </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-12">
+                        <div class="flex flex-col items-center">
+                            <div class="h-7 w-7 rounded-full bg-gray-300">
+                            </div>
+                            <span class="w-1 min-h-[calc(100%-1.75rem)] bg-gray-300 ">
+                            </span>
+                        </div>
+
+                        <div class="col-span-11 bg-gray-200 px-3 rounded-md py-1 mb-4">
+                            <div class="flex flex-col gap-3 pb-2">
+                              <div class="flex justify-between ">
+                                <h4 class="font-semibold text-blue-800">Rédaction</h4>
+                                <div class="text-sm flex  gap-2 items-center">
+                                  <span class="w-4 h-4 rounded-full bg-black "></span> <span>25 juillet 2025</span> 
+                                </div>
+                              </div>
+
+                              <div class="flex gap-3 items-center">
+                                <div class="flex flex-wrap px-3 py-1 bg-gray-100 rounded-md text-sm"><p>Préparation de la réunion avec le client</p></div>
+                              </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-12">
+                          <div class="flex flex-col items-center">
+                              <div class="h-7 w-7 rounded-full bg-gray-300">
+                              </div>
+                              <span class="w-1 min-h-[calc(100%-1.75rem)] bg-gray-300 ">
+                              </span>
+                          </div>
+
+                          <div class="col-span-11 bg-gray-200 px-3 rounded-md py-1 mb-4">
+                              <div class="flex flex-col gap-3 pb-2">
+                                <div class="flex justify-between ">
+                                  <h4 class="font-semibold text-blue-800">Prestations</h4>
+                                  <div class="text-sm flex  gap-2 items-center">
+                                    <span class="w-4 h-4 rounded-full bg-black "></span> <span>25 juillet 2025</span> 
+                                  </div>
+                                </div>
+
+                                <div class="flex gap-3 items-center">
+                                  <div class="flex flex-wrap px-3 py-1 bg-gray-100 rounded-md text-sm"><p>Préparation de la réunion avec le client</p></div>
+                                </div>
+                              </div>
+                                
+                          </div>
+                      </div>
+
+                      <div class="grid grid-cols-12">
+                          <div class="flex flex-col items-center">
+                              <div class="h-7 w-7 rounded-full bg-gray-300">
+                              </div>
+                              <span class="w-1 min-h-[calc(100%-1.75rem)] bg-gray-300 ">
+                              </span>
+                          </div>
+
+                          <div class="col-span-11 bg-gray-200 px-3 rounded-md py-1 ">
+                              <div class="flex flex-col gap-3 pb-2">
+                                <div class="flex justify-between ">
+                                  <h4 class="font-semibold text-blue-800">Analyse de documents</h4>
+                                  <div class="text-sm flex  gap-2 items-center">
+                                    <span class="w-4 h-4 rounded-full bg-black "></span> <span>25 juillet 2025</span> 
+                                  </div>
+                                </div>
+
+                                <div class="flex gap-3 items-center">
+                                  <div class="flex flex-wrap px-3 py-1 bg-gray-100 rounded-md text-sm"><p>Préparation de la réunion avec le client</p></div>
+                                </div>
+                              </div>
+                              
+                          </div>
+                        
+                        </div>
+                    
+                  </div>
+              </section>
+
+              <section class="flex gap-2 ">
+                  <div class="w-1/2 flex flex-col gap-2 border border-blue-200 h-[calc(100%-1rem)] rounded-md
+                  px-3 py-2">
+                      <h4 class="font-semibold">Mes Dossiers Consultés</h4>
+
+                      <div class="flex flex-col gap-2 py-2">
+                          <div class="flex gap-2 justify-between items-center bg-blue-200 text-sm py-1 px-2
+                          rounded-md">
+                            <div class="flex gap-3 items-center">
+                              <div class="h-8 w-8 flex items-center">
+                                  <img src="{% static 'img/icon/folder-rounded.svg' %}" alt=""  class="object-cover">
+                              </div>
+
+                              <div>
+                                  <h6 class="font-semibold">Biantos Agency</h6>
+                                  <span class="text-gray-600">23 juin 2025 à 10h</span>
+                              </div>
+                            </div>
+
+                              <div class="h-8 w-8 ">
+                                  <img src="{% static 'img/icon/arrow-up-linear.svg' %}" alt=""  class="object-cover">
+                              </div>
+
+                              
+                          </div>
+
+                      </div>
+                  </div>
+
+                  <div class="w-1/2 flex flex-col gap-2 border border-blue-200 h-[calc(100%-1rem)] rounded-md 
+                  px-3 py-2">
+                      <h4 class="font-semibold">Mes Dossiers Consultés</h4>
+
+                      <div class=" h-full flex items-center justify-center">
+                          <div>
+                              <p>Liste des dossiers consultés récemment</p>
+                          </div>
+
+                      </div>
+
+                  </div>
+              </section>
+          </section>
+      </div>
+      <aside class="md:col-span-3 min-h-[calc(100vh-5rem)]">
+          <div class="flex flex-col gap-2 h-full border-l border-gray-300 pl-2">
+              <div class="h-1/2 py-2 mb-4">
+                  <div class="flex items-center justify-between py-2 mt-3 text-sm">
+                    <h2 class="text-base font-semibold">Mes rendez-vous</h2>
+                    <button class="text-white bg-sky-950 px-1.5 py-0.5 rounded-md
+                    ">Ajouter <span>+</span></button>
+                  </div>
+                  
+                  <div class="flex flex-col justify-between gap-2 overflow-y-auto h-full">
+                    <div class="relative flex flex-col gap-1"
+                        x-data="{
+                            dropdownOpen: false
+                        }">
+                        <div class="flex gap-1 items-center justify-between text-xs border-b py-2 "
+                       >
+                            <div class="flex flex-col gap-1">
+                                <p class="text-gray-600">lun 20 juil</p>
+                                <p class="text-xs font-semibold">10:00 - 11:00</p>
+                            </div>
+  
+                            <div class="flex flex-col gap-1">
+                                <p class="font-semibold">Avec : Jean Dupont</p>
+                                <div class="">
+                                  <span class="bg-pink-200 rounded-sm py-0.5 px-1.5 text-center">Presentiel</span>
+                                </div>
+                            </div>
+  
+                            <div class="flex flex-col gap-1"
+                            >
+                                <button class=" rounded-sm text-sm text-center flex item-center
+                                  " @click="dropdownOpen=true"><span class="material-icons">more_horiz</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div x-show="dropdownOpen" 
+                            @click.away="dropdownOpen=false"
+                            x-transition:enter="ease-out duration-200"
+                            x-transition:enter-start="-translate-y-2"
+                            x-transition:enter-end="translate-y-0"
+                            class="absolute top-0 right-0 z-50 w-56 mt-12 "
+                            x-cloak>
+                            <div class="relative p-1 mt-1 text-sm bg-white border rounded-md shadow-md border-neutral-200/70 text-neutral-700">
+                                <a href="#" @click="menuBarOpen=false" class="relative flex justify-between w-full cursor-default select-none group items-center rounded px-2 py-1.5 hover:bg-neutral-100 hover:text-neutral-900 outline-none data-[disabled]:opacity-50 data-[disabled]:pointer-events-none">
+                                    <span>New Tab</span>
+                                    <span class="ml-auto text-xs tracking-widest text-neutral-400 group-hover:text-neutral-600">⌘T</span>
+                                </a>
+                                <a href="#" @click="menuBarOpen=false" class="relative flex justify-between w-full cursor-default select-none group items-center rounded px-2 py-1.5 hover:bg-neutral-100 hover:text-neutral-900 outline-none data-[disabled]:opacity-50 data-[disabled]:pointer-events-none">
+                                    <span>New Window</span>
+                                    <span class="ml-auto text-xs tracking-widest text-neutral-400 group-hover:text-neutral-600">⌘N</span>
+                                </a>
+                                <div @click="menuBarOpen=false" class="relative flex justify-between w-full cursor-default select-none group items-center rounded px-2 py-1.5 hover:bg-neutral-100 hover:text-neutral-900 outline-none data-[disabled]:opacity-50 data-[disabled]:pointer-events-none" data-disabled>
+                                    <span>New Private Window</span>
+                                    <span class="ml-auto text-xs tracking-widest text-neutral-400 group-hover:text-neutral-600">⇧⌘N</span>
+                                </div>
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center items-center text-sm text-gray-700">
+                      <a href="#">Tous mes rendez-vous ></a>
+                    </div>
+                  </div>
+              </div>
+
+              <div class="flex flex-col gap-3 py-1 mt-3 h-1/3">
+                <div class="flex items-center justify-between py-2 mt-3 text-sm">
+                    <h2 class="text-base font-semibold">Mes Tâches</h2>
+                    <button class="border border-sky-950 px-1.5 py-0.5 rounded-md
+                    ">Ajouter <span>+</span></button>
+                </div>
+
+                <div class="flex flex-col justify-between gap-2 min-h-full">
+                    <div>
+                        <div class="flex items-center gap-2 text-sm">
+                          <input type="checkbox" name="task1" id="task1" class="rounded-sm">
+                          <label for="task1" class="text-gray-800">Tâche 1</label>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center items-center text-sm text-gray-700">
+                      <a href="#">Toutes mes tâches ></a>
+                    </div>
+                </div>
+              </div>
+          </div>
+
+          
+
+      </aside>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block js %}
+  <script >
+    () => {
+      // Your JavaScript code here
+    };
+  </script>
+{% endblock js %}

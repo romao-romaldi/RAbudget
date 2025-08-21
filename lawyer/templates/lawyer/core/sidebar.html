@@ -1,0 +1,66 @@
+{% load static %}
+
+<div class="max-sm:absolute max-sm:inset-0 transform   w-80 
+z-10 h-screen md:w-64 bg-blue-800 text-white p-3
+"
+:class="{'max-sm:translate-x-0 max-sm:duration-300 max-sm:ease-in max-sm:opacity-100': sidebarOpen === true,
+ 'max-sm:-translate-x-full max-sm:ease-out max-sm:opacity-0': sidebarOpen === false
+}">
+    <div class="flex flex-col px-3 py-4 gap-4 h-full">
+        <div class="flex justify-center ">
+            <div class="relative w-4/5 h-auto">
+                <img src="{% static 'img/Logo_orbit_blanc.png' %}" alt="logo orbit"
+                class="object-cover object-center">
+            </div>
+        </div>
+
+        <div class="h-full flex flex-col justify-between">
+            <div class="flex flex-col gap-3 text-lg">
+    
+                <a href="#" class="flex items-center gap-1 hover:bg-blue-200 hover:text-xl hover:text-black rounded-md
+                hover:px-2 hover:font-medium py-1 transition-all duration-400 ease-in-out">
+                    <div class="relative flex items-center">
+                        <span class="material-icons md-18">dashboard</span>
+                    </div>
+                    <span>Dashboard</span>
+                </a>
+    
+                <div class="flex flex-col">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-gray-300 text-base font-medium">Contacts</span>
+        
+                        <div class="px-3 flex flex-col gap-2 text-sm">
+                             <a href="#" class="flex items-center gap-2 hover:bg-blue-200 hover:text-base hover:text-black rounded-md
+                                hover:px-2 hover:font-medium py-1 transition-all duration-400 ease-in-out">
+                                     <div class="relative flex items-center">
+                                        <span class="material-icons md-18">person</span>
+                                    </div>
+                                    <span>Personnes</span>
+                                </a>
+    
+                                 <a href="#" class="flex items-center gap-2 hover:bg-blue-200 hover:text-base hover:text-black rounded-md
+                                hover:px-2 hover:font-medium py-1 transition-all duration-400 ease-in-out">
+                                    <div class="relative flex items-center">
+                                        <span class="material-icons md-18">business</span>
+                                    </div>
+                                    <span>Organisations</span>
+                                </a>
+                        </div>
+                    </div>
+                </div>
+    
+            </div>
+
+            <div class="flex flex-col w-full">
+                    <button  class="flex items-center gap-2 hover:bg-red-300 hover:border hover:border-red-800 hover:text-xl hover:text-black rounded-md
+                    hover:px-2 hover:font-medium py-1 transition-all duration-400 ease-in-out">
+                        <div class="relative flex items-center">
+                            <span class="material-icons md-18">logout</span>
+                        </div>
+                        <span>Deconnexion</span>
+                    </button>
+                </div>
+            </div>
+    </div>
+
+</div>

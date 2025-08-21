@@ -1,0 +1,142 @@
+{% load aggregations %}
+
+<form hx-post="{% url 'gestionbudget:created_budget' type_budget.budget_sheet.pid %}" hx-target="#budget-created" 
+    hx-trigger="submit" hx-oob="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' id="budget-created"
+    @htmx:after-request="handleAddBudget"
+    >
+    
+   
+    <div class="flex flex-col gap-2">
+        <label for="{{form.title.id_for_label}}" class="block text-sm font-medium text-gray-700">Nom du budget</label>
+        {{form.title.errors }}
+        {{form.title }}
+    </div>
+   
+    <div class="mt-4 flex flex-col gap-2">
+        <label for="{{form.amount_spent.id_for_label}}" class="block text-sm font-medium text-gray-700">Montant Attendu</label>
+        {{form.amount_spent.errors }}
+        {{form.amount_spent }}
+    </div>
+    <div class="mt-4 flex flex-col gap-2">
+        <label for="{{form.amount_reel.id_for_label}}" class="block text-sm font-medium text-gray-700">Montant Réél</label>
+        {{form.amount_reel.errors }}
+        {{form.amount_reel }}
+    </div>
+    {% if type_budget.is_compte %}
+    <div class="mt-4 flex flex-col gap-2">
+        <label for="{{form.account.id_for_label}}" class="block text-sm font-medium text-gray-700">Compte</label>
+        {{form.account.errors }}
+        {{form.account }}
+    </div>
+    {% endif %}
+    <div class="mt-4 flex flex-col gap-2">
+        <label for="{{form.due_date.id_for_label}}" class="block text-sm font-medium text-gray-700">Date d'échéance</label>
+        {{form.due_date.errors }}
+        {{form.due_date }}
+    </div>
+
+     <div class="mt-4 flex flex-col gap-2">
+        <label for="{{form.description.id_for_label}}" class="block text-sm font-medium text-gray-700">Description</label>
+        {{form.description.errors }}
+        {{form.description }}
+    </div>
+
+    <input type="number" name="type_budget" value="{{ type_budget.id }}" hidden>
+    
+    <div class="mt-6">
+        <button type="submit"
+        class="px-4 py-2 text-md w-full bg-teal-700 hover:bg-teal-600 text-white font-semibold rounded-md">Créer</button>
+    </div>
+</form>
+
+
+{% if is_success %}
+     <div class=" overflow-x-auto " id="tbody_budget_{{type_budget.name}}" hx-swap-oob="true">
+        <table class="min-w-full divide-y divide-neutral-200/70 overflow-y-hidden">
+            <thead>
+                <tr class="text-neutral-800">
+                    <th class="px-5 py-3 text-xs font-medium text-left uppercase">
+                        {% if type_budget.is_income %}
+                        Source
+                        {% else %}
+                            Nom
+                        {% endif %}
+                    </th>
+                    <th class="px-5 py-3 text-xs font-medium text-left uppercase">
+                        {% if type_budget.is_income %}
+                            Attendu
+                        {% else %}
+                            Budget Attendu
+                        {% endif %}
+                    </th>
+                    <th class="px-5 py-3 text-xs font-medium text-left uppercase">Date d'échéance</th>
+                    <th class="px-5 py-3 text-xs font-medium text-left uppercase">Réel</th>
+                    {% if not type_budget.is_income %}
+                        <th class="px-5 py-3 text-xs font-medium text-left uppercase">Difference</th>
+                    {% endif %}
+                    {% if type_budget.is_compte %}
+                        <th class="px-5 py-3 text-xs font-medium text-left uppercase">Compte</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-200/70" >
+                {% for budget in type_budget.budgets.all|current_month %}
+                <tr class="text-neutral-600 bg-neutral-50">
+                    <td class="px-5 py-4 text-sm font-medium whitespace-wrap">{{ budget.title }}</td>
+                    <td class="px-5 py-4 text-sm whitespace-nowrap">{{ budget.amount_spent }}</td>
+                    <td class="px-5 py-4 text-sm whitespace-nowrap">{{ budget.due_date }}</td>
+                    <td class="px-5 py-4 text-sm whitespace-nowrap">{{ budget.amount_reel }} </td>
+                    {% if not type_budget.is_income %}
+                        <th class="px-5 py-3 text-xs font-medium text-left uppercase"> {{budget|aggregate_difference}}</th>
+                    {% endif %}
+                    {% if type_budget.is_compte %}
+                        <th class="px-5 py-3 text-xs font-medium text-left uppercase">{{budget.account}}</th>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot  >
+                <tr class="text-neutral-800" id="tfoot_budget_{{type_budget.name}}">
+                    <td class="px-5 py-3 text-sm font-medium whitespace-nowrap">Total</td>
+                    <td class="px-5 py-3 text-sm font-medium whitespace-nowrap">
+                        {% if type_budget.budgets.all.count %}
+                            {{ type_budget.budgets.all|current_month|aggregate_sum:"amount_spent" }} {{ budget_sheet.currency }}
+                        {% else %}
+                            0 {{ budget_sheet.currency }}
+                        {% endif %}
+                    </td>
+                    <td class="px-5 py-3 text-sm font-medium whitespace-nowrap"></td>
+                    </td>
+                    <td class="px-5 py-3 text-sm font-medium whitespace-nowrap">
+                        {% if type_budget.budgets.all.count %}
+                            {{ type_budget.budgets.all|current_month|aggregate_sum:"amount_reel" }} {{ budget_sheet.currency }}
+                            {% if type_budget.is_income %}
+                                <span x-data="" 
+                                x-init="budget_total={{ type_budget.budgets.all|current_month|aggregate_sum:'amount_reel' }}">
+                                </span>
+                            {% elif type_budget.is_spent %}
+                                <span x-data="" 
+                                x-init="add_budget({{type_budget.id}},
+                                {{ type_budget.budgets.all|current_month|aggregate_sum:'amount_reel'}})">
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            0 {{ budget_sheet.currency }}
+                        {% endif %}
+                    </td>
+                    {% if not type_budget.is_income %}
+                    <td class="px-5 py-3 text-sm font-medium whitespace-nowrap">
+                        {% if type_budget.budgets.all.count %}
+                            {{ type_budget.budgets.all|current_month|aggregate_differnces }} {{ budget_sheet.currency }}
+                        {% else %}
+                            0 {{ budget_sheet.currency }}
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+
+{% endif %}

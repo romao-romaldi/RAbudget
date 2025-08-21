@@ -1,0 +1,43 @@
+
+<form hx-post="{% url 'gestionbudget:budget_sheet_create' %}" hx-target="#budget-sheet-created" 
+    hx-trigger="submit" hx-oob="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' id="budget-sheet-created"
+    @htmx:after-request="handleAddBudgetSheet"
+    >
+    
+   
+    <div class="flex flex-col gap-2">
+        <label for="{{form.title.id_for_label}}" class="block text-sm font-medium text-gray-700">Nom du budget</label>
+        {{form.title.errors }}
+        {{form.title }}
+    </div>
+    <div class="mt-4 flex flex-col gap-2">
+        <label for="{{form.description.id_for_label}}" class="block text-sm font-medium text-gray-700">Description</label>
+        {{form.description.errors }}
+        {{form.description }}
+    </div>
+    <div class="mt-4 flex flex-col gap-2">
+        <label for="{{form.currency.id_for_label}}" class="block text-sm font-medium text-gray-700">Devis</label>
+        {{form.currency.errors }}
+        {{form.currency }}
+    </div>
+    <div class="mt-6">
+        <button type="submit"
+        class="px-4 py-2 text-md w-full bg-teal-700 hover:bg-teal-600 text-white font-semibold rounded-md">Créer</button>
+    </div>
+</form>
+
+
+{% if is_success %}
+  <div class="flex flex-col gap-4" id="list_budget_sheet" hx-swap-oob="afterbegin">
+    <div class="flex max-sm:flex-col md:justify-between md:items-center border rounded-lg hover:bg-blue-50 transition py-2 gap-1.5 px-4">
+        <div class="font-medium">{{ budget_sheet.title }}</div>
+        <div class="text-sm text-gray-500">{{ budget_sheet.date_created|date:"d M Y" }}</div>
+        <div class="mt-2">
+            <a href="{% url 'gestionbudget:budget_sheet_detail' budget_sheet.pid %}" class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-sm">Voir</a>
+            <a href="{% url 'gestionbudget:budget_sheet_detail' budget_sheet.pid %}" class="inline-block px-3 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 text-sm">Modifier</a>
+            <a href="{% url 'gestionbudget:budget_sheet_detail' budget_sheet.pid %}" class="inline-block px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm">Supprimer</a>
+        </div>
+    </div>
+
+  </div>
+{% endif %}
