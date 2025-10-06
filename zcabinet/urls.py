@@ -22,8 +22,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('todo/', include('todo.urls', namespace='todo')),
     path('gestions-budget/', include('gestionbuget.urls', namespace='gestionbudget')),
+    path('gestions-budget/resumes/', include('resume.urls', namespace='resume')),
     path('lawyer/', include('lawyer.urls', namespace='lawyer')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
+    path('', include('customuser.urls', namespace='customuser')),
 
 ]
 

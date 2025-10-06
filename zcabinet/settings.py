@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-#__@_+&)%+yxl3bqe@438gwv=%nnmj!x7g(iya7rqm^e-e)3js
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*", "127.0.0.1", "localhost","192.168.100.11" ]
 
 
 # Application definition
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     "customuser",
     "todo",
     "gestionbuget",
+    "resume",
     "lawyer",
     #"cabinet",
 
@@ -49,7 +51,9 @@ INSTALLED_APPS = [
     'tailwind',
     'theme',
     "django_htmx",
-    'django_browser_reload'
+    'django_browser_reload',
+    'ckeditor',
+    'ckeditor_uploader',
 
 ]
 
@@ -150,3 +154,40 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CKEditor Configuration
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_IMAGE_BACKEND = "pillow"
+CKEDITOR_JQUERY_URL = 'https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline', 'Strike'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
+            ['Link', 'Unlink'],
+            ['Format', 'Font', 'FontSize'],
+            ['TextColor', 'BGColor'],
+            ['Table', 'HorizontalRule'],
+            ['RemoveFormat', 'Source']
+        ],
+        'height': 300,
+        'width': '100%',
+        'removePlugins': 'elementspath',
+        'resize_enabled': False,
+    },
+}
+
+
+# Configuration Email SMTP
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@budgetmanager.com')
+
+# Configuration des invitations
+INVITATION_EXPIRE_DAYS = config('INVITATION_EXPIRE_DAYS', default=7, cast=int)

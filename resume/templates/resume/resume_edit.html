@@ -1,0 +1,65 @@
+{% extends "resume/base.html" %}
+
+{% block resume_content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Modifier le rapport</h1>
+        <p class="text-gray-600 mt-2">{{ budget_sheet.title }}</p>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="space-y-6">
+                <!-- Titre -->
+                <div>
+                    <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.title.label }}
+                    </label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.title.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Date -->
+                <div>
+                    <label for="{{ form.date_resume.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.date_resume.label }}
+                    </label>
+                    {{ form.date_resume }}
+                    {% if form.date_resume.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.date_resume.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Contenu -->
+                <div>
+                    <label for="{{ form.content.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.content.label }}
+                    </label>
+                    {{ form.content }}
+                    {% if form.content.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.content.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-8 flex gap-4">
+                <button type="submit" 
+                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                    Enregistrer les modifications
+                </button>
+                <a href="{% url 'resume:resume_detail' budget_sheet.pid resume.pid %}" 
+                   class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

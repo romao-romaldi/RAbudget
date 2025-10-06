@@ -14,7 +14,7 @@
         <style>[x-cloak]{display:none}</style>
         {% htmx_script %}
     </head>
-    <body x-data class="w-full">
+    <body x-data >
         <main class="md:flex w-full h-screen overflow-hidden"
         hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
         x-data="{ 

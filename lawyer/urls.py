@@ -1,5 +1,5 @@
 from django.urls import path
-from . import account_view, core_views, contact_view
+from . import account_view, core_views, contact_view, gestion_active_views
 
 app_name = "lawyer"
 urlpatterns = [
@@ -14,4 +14,11 @@ urlpatterns = [
     # contact views
     path('contact/list_personne/', contact_view.contact_personne, name='contact_personne'),
     path('contact/details_personne/', contact_view.details_contact_personne, name='detail_contact_personne'),
+
+
+    #gestion des activites
+    path('settings/gestion_active/', gestion_active_views.gestion_active_views, name='gestion_active'),
+    path('settings/add_type_activiter/', gestion_active_views.add_type_activiter, name='add_type_activiter'),
+    path('settings/details_type_active/<int:id>/', gestion_active_views.details_type_active,name='details_type_active'),
+
 ]

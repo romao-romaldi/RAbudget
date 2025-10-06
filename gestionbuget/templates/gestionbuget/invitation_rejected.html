@@ -1,0 +1,20 @@
+{% extends "gestionbuget/base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+        <div class="w-16 h-16 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-900 mb-4">Invitation refusée</h1>
+        <p class="text-gray-600 mb-6">Vous avez refusé l'invitation à rejoindre "{{ invitation.sheet.title }}".</p>
+        <p class="text-gray-600 mb-8">{{ invitation.invited_by }} sera notifié de votre décision.</p>
+        <a href="{% url 'gestionbudget:budget_sheet_list' %}" 
+           class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Retour aux budgets
+        </a>
+    </div>
+</div>
+{% endblock %}

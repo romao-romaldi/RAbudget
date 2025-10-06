@@ -9,7 +9,7 @@ import uuid
 class Profile(models.Model):
     user = models.OneToOneField(Users, on_delete=models.CASCADE)
     bio = models.CharField(max_length=100, null=True, blank=True)
-    pid = models.UUIDField(auto_created=True, default=uuid.uuid4(), unique=True, editable=False)
+    pid = models.UUIDField(auto_created=True, default=uuid.uuid4, unique=True, editable=False)
 
     last_name = models.CharField(max_length=100, default="", blank=True , null=True)
     first_name = models.CharField(max_length=100, default="", blank=True , null=True)

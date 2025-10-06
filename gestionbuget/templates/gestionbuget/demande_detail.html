@@ -1,0 +1,155 @@
+{% extends "gestionbuget/base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8" x-data="{ showCommentForm: false }">
+    <!-- Retour -->
+    <div class="mb-4">
+        <a href="{% url 'gestionbudget:demandes_list' budget_sheet.pid %}" 
+           class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Retour aux demandes
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="flex items-start justify-between mb-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ demande.title }}</h1>
+                <p class="text-gray-600">{{ budget_sheet.title }}</p>
+            </div>
+            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full 
+                {% if demande.status == 'pending' %}bg-yellow-100 text-yellow-800
+                {% elif demande.status == 'accept' %}bg-green-100 text-green-800
+                {% elif demande.status == 'reject' %}bg-red-100 text-red-800
+                {% endif %}">
+                {% if demande.status == 'pending' %}En attente
+                {% elif demande.status == 'accept' %}Acceptée
+                {% elif demande.status == 'reject' %}Rejetée
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">Informations</h3>
+                <dl class="space-y-2">
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Type de budget</dt>
+                        <dd class="text-sm text-gray-900">{{ demande.type_budget.name }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Montant demandé</dt>
+                        <dd class="text-sm text-gray-900">{{ demande.amount_spent }} {{ budget_sheet.currency }}</dd>
+                    </div>
+                    {% if demande.amount_reel %}
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Montant accordé</dt>
+                        <dd class="text-sm text-gray-900">{{ demande.amount_reel }} {{ budget_sheet.currency }}</dd>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Demandeur</dt>
+                        <dd class="text-sm text-gray-900">{{ demande.user }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Date de création</dt>
+                        <dd class="text-sm text-gray-900">{{ demande.created_at|date:"d M Y à H:i" }}</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">Fichiers</h3>
+                <div class="space-y-2">
+                    {% if demande.file %}
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                        </svg>
+                        <a href="{{ demande.file.url }}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                            Fichier justificatif
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% if demande.file_reel %}
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <a href="{{ demande.file_reel.url }}" target="_blank" class="text-green-600 hover:text-green-800">
+                            Fichier de validation
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% if not demande.file and not demande.file_reel %}
+                    <p class="text-sm text-gray-500">Aucun fichier attaché</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if demande.description %}
+        <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Description</h3>
+            <p class="text-gray-700 whitespace-pre-wrap">{{ demande.description }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Section commentaires -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                Commentaires ({{ commentaires.count }})
+            </h2>
+            <button @click="showCommentForm = !showCommentForm" 
+                    class="flex items-center gap-2 px-4 py-2 border-2 border-blue-600 text-blue-600 bg-white rounded-lg hover:bg-blue-50 transition text-sm font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span x-text="showCommentForm ? 'Annuler' : 'Ajouter un commentaire'"></span>
+            </button>
+        </div>
+
+        <!-- Formulaire d'ajout de commentaire -->
+        <div x-show="showCommentForm" x-transition class="mb-6 p-4 bg-gray-50 rounded-lg">
+            <form hx-post="{% url 'gestionbudget:add_comment_htmx' budget_sheet.pid demande.pid %}"
+                  hx-target="#comments-section"
+                  hx-swap="innerHTML"
+                  hx-on::after-request="if(event.detail.successful) { showCommentForm = false; document.querySelector('form').reset(); }"
+                  class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Votre commentaire
+                    </label>
+                    <textarea name="comment" rows="3" required
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Ajoutez votre commentaire..."></textarea>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" @click="showCommentForm = false"
+                            class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                        Publier
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Liste des commentaires -->
+        <div id="comments-section">
+            {% include 'gestionbuget/htmx/comments_section.html' %}
+        </div>
+    </div>
+</div>
+{% endblock %}

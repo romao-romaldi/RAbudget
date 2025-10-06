@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import BudgetSheet, Budget, TypeBudget, Demande
+from .models import BudgetSheet, Budget, TypeBudget, Demande, CommentDemande
 
 class FormBudgetSheet(forms.ModelForm):
     class Meta:
@@ -61,9 +61,33 @@ class FormSection(forms.ModelForm):
 
 class FormDemande(forms.ModelForm):
     class Meta:
-        mdoel = Demande
+        model = Demande
 
-        fields = ["title", "description", "amount_spent", "amount_reel"]
+        fields = ["title", "description", "amount_spent","file"]
         widgets = {
+            "title": forms.TextInput(attrs={"class": "mt-1 block w-full border \
+                                    border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                            "placeholder": "Entrez le nom du budget", "required": True}),
+            "description": forms.Textarea(attrs={"class": "mt-1 block w-full border \
+                                   border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500", }),
 
+            "amount_spent": forms.NumberInput(attrs={
+                "class":"mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 \
+                      focus:border-blue-500" , "required": True
+            }),
+            # "amount_reel": forms.NumberInput(attrs={
+            #     "class": "mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 \
+            #                   focus:border-blue-500", "required": True
+            # }),
         }
+
+
+class FormComment(forms.ModelForm):
+    class Meta:
+        model = CommentDemande
+        fields = ["description"]
+        widgets = {
+            "description": forms.Textarea(attrs={"class": "mt-1 block w-full border \
+            border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500", })
+        }
+

@@ -1,0 +1,109 @@
+{% extends "resume/base.html" %}
+
+{% block resume_content %}
+<div class="container mx-auto px-4 py-8 max-w-5xl">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Gestion de la hiérarchie</h1>
+        <p class="text-gray-600 mt-2">{{ budget_sheet.title }}</p>
+    </div>
+
+    <!-- Hiérarchie existante -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Hiérarchie actuelle</h2>
+        
+        {% if hierarchies %}
+        <div class="space-y-3">
+            {% for hierarchie in hierarchies %}
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-blue-600 font-semibold">{{ hierarchie.user.user.username|slice:":1"|upper }}</span>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-900">{{ hierarchie.user }}</p>
+                        <p class="text-sm text-gray-500">{{ hierarchie.user.user.email }}</p>
+                    </div>
+                </div>
+                
+                {% if hierarchie.superieur %}
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-400">→</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <span class="text-green-600 font-semibold text-sm">{{ hierarchie.superieur.user.username|slice:":1"|upper }}</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">{{ hierarchie.superieur }}</p>
+                            <p class="text-xs text-gray-500">Supérieur</p>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <span class="text-sm text-gray-400 italic">Pas de supérieur défini</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500 text-center py-8">Aucune hiérarchie définie pour le moment</p>
+        {% endif %}
+    </div>
+
+    <!-- Formulaire d'ajout -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Définir une nouvelle relation hiérarchique</h2>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div>
+                <label for="{{ form.user.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    {{ form.user.label }}
+                </label>
+                {{ form.user }}
+                {% if form.user.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.user.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.superieur.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    {{ form.superieur.label }}
+                </label>
+                {{ form.superieur }}
+                {% if form.superieur.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.superieur.errors.0 }}</p>
+                {% endif %}
+                <p class="mt-2 text-sm text-gray-500">
+                    💡 Laissez vide si l'utilisateur n'a pas de supérieur
+                </p>
+            </div>
+
+            <button type="submit" 
+                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                Ajouter la relation
+            </button>
+        </form>
+    </div>
+
+    <!-- Info -->
+    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h3 class="font-semibold text-blue-900 mb-2">ℹ️ Comment ça marche ?</h3>
+        <ul class="text-sm text-blue-800 space-y-1 list-disc list-inside">
+            <li>Définissez qui est le supérieur hiérarchique de chaque utilisateur</li>
+            <li>Quand un utilisateur crée un résumé, il sera automatiquement envoyé à son supérieur</li>
+            <li>Le supérieur pourra valider ou rejeter le résumé</li>
+            <li>Un utilisateur peut ne pas avoir de supérieur (ex: directeur)</li>
+        </ul>
+    </div>
+
+    <!-- Retour -->
+    <div class="mt-8">
+        <a href="{% url 'resume:resume_list' budget_sheet.pid %}" 
+           class="text-blue-600 hover:underline">
+            ← Retour aux résumés
+        </a>
+    </div>
+</div>
+{% endblock %}

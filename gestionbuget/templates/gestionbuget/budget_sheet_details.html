@@ -8,6 +8,7 @@
     total_pourcentage_depense: 0,
     chart_spent: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     chart_income: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    demande_type_budget: null,
 
     add_budget(id,value) {
         let i = this.t.filter(item => item.id !== id)
@@ -16,7 +17,7 @@
     },
     get budget_total_spent() {
         const total= this.t.reduce((acc, budget) => acc + budget.value, 0)
-        this.total_pourcentage_depense = parseFloat((total / this.budget_total) * 100).toFixed(2);
+        this.total_pourcentage_depense = parseFloat((total / this.budget_total) * 100).toFixed(2) | 0;
 
         return total;
     },
@@ -29,13 +30,60 @@
 >
     <div class="max-w-7xl mx-auto flex flex-col gap-3 py-8 px-3" >
         <div>
-            <div class="flex items-center max-sm:flex-col gap-6 max-sm:gap-3 max-sm:items-start">
-                <a class="border-b font-semibold" href="{% url 'gestionbudget:budget_sheet_list' %}"><--- 
-                    <span class="max-sm:hidden"> retour </span>
-                </a>
-                <div>
-                    <h1 class="text-xl max-md:text-base font-bold">{{ budget_sheet.title }}</h1>
-                    <p class="text-base max-md:text-sm text-gray-500 font-extralight">Created on: {{ budget_sheet.date_created  }}</p>
+            <div class="flex items-center max-sm:flex-col gap-6 max-sm:gap-3 max-sm:items-start justify-between">
+                <div class="flex items-center gap-6 max-sm:gap-3">
+                    <a class="border-b font-semibold" href="{% url 'gestionbudget:budget_sheet_list' %}">
+                        <span class="max-sm:hidden"> retour </span>
+                    </a>
+                    <div>
+                        <h1 class="text-xl max-md:text-base font-bold">{{ budget_sheet.title }}</h1>
+                        <p class="text-base max-md:text-sm text-gray-500 font-extralight">Created on: {{ budget_sheet.date_created  }}</p>
+                    </div>
+                </div>
+                
+                <div class=" flex gap-5 ">
+                    <!-- Bouton Gestion des demandes -->
+                    <a href="{% url 'gestionbudget:demandes_list' budget_sheet.pid %}"
+                       class="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span class="max-sm:hidden">Demandes</span>
+                        <span class="sm:hidden">📋</span>
+                    </a>
+                    <!-- Bouton Rapports -->
+                    <a href="{% url 'resume:resume_list' budget_sheet.pid %}"
+                       class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span class="max-sm:hidden">Rapports journaliers</span>
+                        <span class="sm:hidden">Rapports</span>
+                    </a>
+
+                    <!-- Bouton Gestion des utilisateurs (seulement pour le propriétaire) -->
+                    {% if is_owner %}
+                    <a href="{% url 'gestionbudget:manage_users' budget_sheet.pid %}"
+                       class="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span class="max-sm:hidden">Utilisateurs</span>
+                        <span class="sm:hidden">👥</span>
+                    </a>
+                    {% endif %}
+
+                    <!-- Badge pour indiquer le statut -->
+                    {% if is_partner and not is_owner %}
+                        <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                            Partenaire
+                        </span>
+                    {% elif is_owner %}
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                            Propriétaire
+                        </span>
+                    {% endif %}
+
                 </div>
             </div>
         </div>
@@ -77,7 +125,7 @@
                     <div class="border rounded-md p-2 text-base">
                         <h3 class="text-sm text-gray-700">Total Dépenses</h3>
                         <p class="text-lg font-bold"><span x-text="budget_total_spent"></span> {{budget_sheet.currency}}</p>
-                        <p :class="{'text-red-500': total_pourcentage_depense > 100, 'text-green-500': total_pourcentage_depense <= 100}"> <span x-text="total_pourcentage_depense"></span>% du révenue</p>
+                        <p :class="{'text-red-500': total_pourcentage_depense > 100, 'text-green-500': total_pourcentage_depense <= 100}"> <span x-text="total_pourcentage_depense | 0"></span>% du révenue</p>
                     </div>
 
                 </div>
@@ -124,7 +172,7 @@
                 </div>
             </div>
             <div class="md:col-span-3 max-md:overflow-x-scroll">
-                <div class="w-full h-96 max-md:overflow-x-scroll" id="chart"></div>
+                <div class=" h-96 max-md:overflow-x-scroll" id="chart"></div>
                 <div
 
                 x-data="{ modalOpenChart: false }"
@@ -167,14 +215,23 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-6">
             {% for type_budget in type_budgets %}
-           <div x-data="{ modalOpen: false }" 
+            <div x-data="{ modalOpen: false, type:'' }" 
                 @keydown.escape.window="modalOpen = false" :class="{ 'z-40': modalOpen }"
                 class="border rounded-md p-3 bg-white shadow-sm  mb-8">
                 <div class="flex items-center justify-between  pb-4 px-2">
                     <h2 class="text-lg font-semibold ">{{ type_budget.name }}</h2>
-                    <div class="flex items-center ">
-                        <button @click="modalOpen=true"
+                    <div class="flex items-center gap-2">
+                        {% if type_budget.is_spent and is_partner %}
+                            <button @click="modalOpen=true, type='demande',
+                             demande_type_budget={'pid':'{{type_budget.id}}', 'name':'{{type_budget.name}}'} "
+                            class="text-md rounded-full  px-3 py-1.5 shadow text-teal-500 hover:bg-teal-700"
+                            title="Faire une demande "
+                            >+</button>
+                        {% endif %}
+                        {% if is_owner %}
+                        <button @click="modalOpen=true, type='' "
                         class="text-md rounded-full  px-3 py-1.5 shadow text-teal-500 hover:bg-teal-700">+</button>
+                        {% endif %}
                     </div>
                 </div>
                 <div class=" overflow-x-auto " id="tbody_budget_{{type_budget.name}}">
@@ -291,7 +348,12 @@
                                 </button>
                             </div>
                             <div class="relative w-auto pb-8">
-                                {% include "gestionbuget/htmx/create_budgets.html" %}
+                                <div x-show="!type">
+                                    {% include "gestionbuget/htmx/create_budgets.html" %}
+                                </div>
+                                <div x-show="type" id="demande">
+                                    {% include "gestionbuget/htmx/demande/created_demande.html" %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -300,7 +362,7 @@
             </div>
             {% endfor %}
 
-           </div>
+        </div>
 
 
         </div>
@@ -317,7 +379,7 @@
         if (this.responseStatus === 201){
             this.modalOpen = false;
             this.title = "Success";
-            this.description = "Le budget a été créée avec succès.";
+            this.description = "L'operation été créée avec succès.";
             this.type = "success";
             this.popToast();
             // this.$dispatch('htmx:after-request', { successful: true });

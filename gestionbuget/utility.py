@@ -3,7 +3,6 @@ from django.db.models import  Count, Sum
 from django.db.models.functions import TruncMonth
 from datetime import datetime, date, timedelta
 
-from .models import TypeBudget
 
 
 def generpid(number_caracter:int):
@@ -12,7 +11,7 @@ def generpid(number_caracter:int):
     return pid
 
 
-def default_create_init(request, budgetSheet):
+def default_create_init(request, budgetSheet, typeBudget):
     """
     Function to create initial budget types for a new budget sheet.
     """
@@ -20,22 +19,22 @@ def default_create_init(request, budgetSheet):
         {
             "name": "Revenus", "description": "Budget pour les revenus",
             "is_due_date": False, "is_date_created": True, "is_compte": False,
-            "is_salary": True,"is_revenu":True
+            "is_salary": True,"is_revenu":True, "is_spent":False
         },
         {
             "name": "Dépenses", "description": "Budget pour les dépenses",
             "is_due_date": True, "is_date_created": True, "is_compte": False,
-            "is_salary": False,"is_revenu":False
+            "is_salary": False,"is_revenu":False, "is_spent":True
          },
         {
             "name": "Epargne", "description": "Budget pour d'épargne",
             "is_due_date": False, "is_date_created": True, "is_compte": True,
-            "is_salary": False,"is_revenu":False
+            "is_salary": False,"is_revenu":False , "is_spent":True
         }
     ]
 
     for type_data in types:
-        type_budget = TypeBudget.objects.create(
+        type_budget = typeBudget.objects.create(
             name=type_data["name"],
             description=type_data["description"],
             is_due_date=type_data["is_due_date"],
@@ -44,6 +43,7 @@ def default_create_init(request, budgetSheet):
             is_salary=type_data["is_salary"],
             is_income = type_data["is_revenu"],
             budget_sheet=budgetSheet,
+            is_spent = type_data["is_spent"],
             user=request.user.profile
         )
         type_budget.save()

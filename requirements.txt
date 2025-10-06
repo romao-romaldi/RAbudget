@@ -1,0 +1,26 @@
+# Django et extensions
+Django==4.0.4
+django-tailwind==3.8.0
+django-htmx==1.17.0
+django-browser-reload==1.12.1
+
+# Éditeur riche
+django-ckeditor==6.5.1
+
+# Utilitaires
+Pygments==2.17.2
+
+# Base de données (optionnel pour production)
+# psycopg2-binary==2.9.9  # PostgreSQL
+# mysqlclient==2.2.0      # MySQL
+
+# Serveur ASGI (optionnel pour production)
+# gunicorn==21.2.0
+# uvicorn==0.27.0
+
+# Sécurité et variables d'environnement (recommandé pour production)
+# python-decouple==3.8
+# django-environ==0.11.2
+
+# Pillow pour les images (si nécessaire)
+# Pillow==10.2.0

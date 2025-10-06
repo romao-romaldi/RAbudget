@@ -1,0 +1,47 @@
+<!-- Message de succès -->
+{% if success %}
+<div class="mb-4 p-4 rounded-lg bg-green-100 border-l-4 border-green-500 text-green-800 flex items-center gap-3">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <span>{{ success }}</span>
+</div>
+{% endif %}
+
+{% if commentaires %}
+<div class="space-y-4">
+    {% for commentaire in commentaires %}
+    <div class="border border-gray-200 rounded-lg p-4">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                {{ commentaire.user.user.username|slice:":1"|upper }}
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="font-medium text-gray-900">{{ commentaire.user }}</span>
+                    <span class="text-sm text-gray-500">{{ commentaire.created_at|date:"d M Y à H:i" }}</span>
+                    {% if commentaire.status != 'pending' %}
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                        {% if commentaire.status == 'accept' %}bg-green-100 text-green-800
+                        {% elif commentaire.status == 'reject' %}bg-red-100 text-red-800
+                        {% endif %}">
+                        {% if commentaire.status == 'accept' %}Validation
+                        {% elif commentaire.status == 'reject' %}Rejet
+                        {% endif %}
+                    </span>
+                    {% endif %}
+                </div>
+                <p class="text-gray-700 whitespace-pre-wrap">{{ commentaire.description }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-8 text-gray-500">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+    </svg>
+    <p>Aucun commentaire pour le moment</p>
+</div>
+{% endif %}
