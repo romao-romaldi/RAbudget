@@ -48,15 +48,19 @@ class FormBudget(forms.ModelForm):
 class FormSection(forms.ModelForm):
     class Meta:
         model = TypeBudget
-        fields = ["name", "description", "is_compte", "is_income"]
+        fields = ["name", "description", "is_spent", "is_transaction", "is_saving"]
         widgets = {
-            "title": forms.TextInput(attrs={"class": "mt-1 block w-full border \
+            "name": forms.TextInput(attrs={"class": "mt-1 block w-full border \
                                         border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500",
                                             "placeholder": "Entrez le nom du budget", "required": True}),
             "description": forms.Textarea(attrs={"class": "mt-1 block w-full border \
                             border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500", }),
+            "is_spent": forms.CheckboxInput(attrs={"class": "hidden", ":checked": "is_spent"}),
+            "is_transaction": forms.CheckboxInput(attrs={"class": "hidden", ":checked": "is_transaction"}),
+            "is_saving": forms.CheckboxInput(attrs={"class": "hidden", ":checked": "is_saving"})
 
         }
+
 
 
 class FormDemande(forms.ModelForm):

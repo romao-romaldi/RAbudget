@@ -2,7 +2,12 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 py-8" 
-     x-data="{ showCreateSlide: false, showValidateSlide: false, selectedDemande: null }"
+     x-data="{ showCreateSlide: false, 
+        showValidateSlide: false, 
+        selectedDemande: null ,
+
+        
+    }"
      @close-validate-slide.window="showValidateSlide = false; selectedDemande = null; console.log('Slide-over fermé automatiquement')"
      @closevalidateslide.window="showValidateSlide = false; selectedDemande = null; console.log('Slide-over fermé via HTMX')">
     <!-- Retour -->
@@ -31,7 +36,7 @@
                 </svg>
                 Nouvelle demande
             </h2>
-            <button @click="showCreateSlide = true" 
+            <button @click="showCreateSlide = true"
                     class="flex items-center gap-2 px-4 py-2 border-2 border-purple-600 text-purple-600 bg-white rounded-lg hover:bg-purple-50 transition text-sm font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -50,8 +55,6 @@
 
     <!-- Liste des demandes -->
     <div id="demandes-section" class="bg-white rounded-lg shadow-md overflow-hidden">
-        
-        
         {% include 'gestionbuget/htmx/demandes_table.html' %}
     </div>
 
@@ -59,8 +62,7 @@
     <div x-show="showCreateSlide" 
          x-cloak
          class="fixed inset-0 overflow-hidden z-50" 
-         role="dialog" 
-         aria-modal="true">
+         >
         <div class="absolute inset-0 overflow-hidden">
             <!-- Overlay -->
             <div x-show="showCreateSlide"
@@ -101,10 +103,11 @@
 
                         <!-- Content -->
                         <div class="flex-1 px-4 py-6 sm:px-6">
-                            <form hx-post="{% url 'gestionbudget:create_demande_htmx' budget_sheet.pid %}"
+                            <form  id="create-demande-form"
+                            hx-post="{% url 'gestionbudget:create_demande_htmx' budget_sheet.pid %}"
                                   hx-target="#demandes-section"
                                   hx-swap="innerHTML"
-                                  hx-on::after-request="if(event.detail.successful) { showCreateSlide = false; document.querySelector('form').reset(); }"
+                                  @htmx:after-request="if(event.detail.successful) { showCreateSlide = false; document.getElementById('create-demande-form').reset(); }"
                                   enctype="multipart/form-data"
                                   class="space-y-4">
                                 {% csrf_token %}
@@ -249,7 +252,7 @@
 
                         <!-- Content -->
                         <div class="flex-1 px-4 py-6 sm:px-6">
-                            <form x-bind:hx-post="selectedDemande ? '{% url 'gestionbudget:update_demande_status_htmx' budget_sheet.pid 'TEMP_ID' %}'.replace('TEMP_ID', selectedDemande) : ''"
+                            <form hx-post="{% url 'gestionbudget:update_demande_status_htmx' budget_sheet.pid  %}"
                                   hx-target="#demandes-section"
                                   hx-swap="innerHTML"
                                   hx-on::after-request="console.log('Réponse HTMX reçue:', event.detail); if(event.detail.successful) { console.log('Validation réussie'); }"
@@ -302,6 +305,8 @@
                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                     <p class="mt-1 text-xs text-gray-500">Reçu, facture, ou document de validation</p>
                                 </div>
+
+                                <input type="hidden" name="demande_pid" :value="selectedDemande">
 
                                 <!-- Footer buttons -->
                                 <div class="flex gap-3 pt-6 border-t">

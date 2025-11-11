@@ -43,6 +43,8 @@ def resume_list(request, pid_sheet):
         'role': 'Propriétaire',
         'is_owner': True
     })
+
+    is_owner = True if budget_sheet.user == request.user.profile else False
     
     # Partenaires
     partenaires = budget_sheet.type_sheet_partenaire.all()
@@ -52,7 +54,8 @@ def resume_list(request, pid_sheet):
             'role': 'Partenaire',
             'is_owner': False
         })
-    
+
+    print("ok je verife", users_with_roles)
     context = {
         'budget_sheet': budget_sheet,
         'my_resumes': my_resumes,
@@ -60,6 +63,7 @@ def resume_list(request, pid_sheet):
         'hierarchies': hierarchies,
         'users_with_roles': users_with_roles,
         'today': timezone.now().date(),
+        "is_owner": is_owner
     }
     
     return render(request, 'resume/resume_list.html', context)

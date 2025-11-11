@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block navbar_menu %}
+<a href="{% url 'gestionbudget:budget_sheet_list' %}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Gestion Budget</a>
+<a href="{% url 'resume:resume_list' 'default' %}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Résumés</a>
+<a href="{% url 'customuser:logo_list' %}" class="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Gestion Logos</a>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{% url 'customuser:logo_list' %}" class="text-sm font-medium text-gray-700 hover:text-blue-600">
+                            Gestion des Logos
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="ml-1 text-sm font-medium text-gray-500">Supprimer Logo</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+            <h1 class="text-3xl font-bold text-gray-900 mt-4">Confirmer la suppression</h1>
+        </div>
+
+        <!-- Contenu de confirmation -->
+        <div class="bg-white shadow-sm rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="flex-shrink-0">
+                        <img src="{{ logo.image.url }}" alt="{{ logo.nom }}" class="w-16 h-16 object-contain rounded-lg border border-gray-200">
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900">{{ logo.nom }}</h3>
+                        {% if logo.description %}
+                        <p class="text-sm text-gray-500">{{ logo.description }}</p>
+                        {% endif %}
+                        {% if logo.est_actif %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-2">
+                            Logo actuellement actif
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">
+                                Êtes-vous sûr de vouloir supprimer ce logo ?
+                            </h3>
+                            <div class="mt-2 text-sm text-red-700">
+                                <p>Cette action est irréversible. Le logo sera définitivement supprimé de la base de données et du serveur.</p>
+                                {% if logo.est_actif %}
+                                <p class="mt-2 font-medium">⚠️ Ce logo est actuellement actif dans la navbar. Vous devrez activer un autre logo après la suppression.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire de suppression -->
+                <form method="post" class="flex justify-end space-x-3">
+                    {% csrf_token %}
+                    <a href="{% url 'customuser:logo_list' %}"
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Annuler
+                    </a>
+                    <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Supprimer définitivement
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

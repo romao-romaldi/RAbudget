@@ -8,19 +8,19 @@
      hx-target="#istodos"
      hx-trigger="submit"
      hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
-     @htmx:after-request="handleFormSubmission"
+    
     >
         <div>
             <!-- <label for="taskName" class="block text-sm font-medium text-gray-700">Nom de la Tâche</label> -->
-            <input type="text" id="taskName" name="taskName" 
+            <input type="text" id="id_title" name="title" 
             required class="mt-1 block w-full border-0 border-gray-300 rounded-md shadow-sm focus:border-indigo-500
                 focus:ring-indigo-500 font-bold text-xl sm:text-sm"
-                placeholder="Entrez le nom de la tâche ici...">
+                placeholder="Entrez le nom de la tâche ici..." />
         </div>
         <div class="mt-4">
             <!-- <label for="taskDescription" class="block text-sm font-medium text-gray-700">Description</label> -->
-            <textarea id="taskDescription" name="taskDescription" rows="8" 
-            required class="mt-1 block w-full border-0 border-gray-300 rounded-md shadow-sm focus:border-indigo-500
+            <textarea id="id_description" name="description" rows="8" 
+             class="mt-1 block w-full border-0 border-gray-300 rounded-md shadow-sm focus:border-indigo-500
                 focus:ring-indigo-500 sm:text-sm "
                 placeholder="Entrez la description de la tâche ici..."
                 ></textarea>
@@ -28,7 +28,7 @@
         <div>
             <div class="flex flex-col">
                 <label for="">date realisation et heure (facultatif)</label>
-                <input type="datetime-local">
+                <input type="datetime-local" />
             </div>
     
         </div>
@@ -69,7 +69,7 @@
     
         <div>
             <label for="responsable" class="block text-lg font-bold text-gray-600">Responsables</label>
-            <div x-data="{ responsables: [] }" class="flex gap-2">
+            <div x-data="{ responsables: [] }" class="flex gap-2 overflow-y-scroll">
                 <!-- Ajoute d'autres responsables si besoin -->
                 {% for use in users  %}
                     <label 
@@ -102,14 +102,13 @@
                     </label>
                     
                 {% endfor %}
-                <input hidden name="isResponsible" type="text"  x-model="responsables" />
-
+                <input hidden name="isResponsible" type="text"  :value="responsables" />
             </div>
         </div>
     
         <div>
             <label for="responsable" class="block text-lg font-bold text-gray-600">Validateurs</label>
-            <div x-data="{ validateurs: [1,2] }" class="flex gap-2">
+            <div x-data="{ validateurs: [] }" class="flex gap-2 overflow-y-scroll">
                 <!-- Ajoute d'autres responsables si besoin -->
                 {% for use in users  %}
                 <label 
@@ -137,11 +136,11 @@
                     />
                 </label>
                 {% endfor %}
-                <input hidden name="validators" type="text"  x-model="validateurs">
+                <input hidden name="validators" type="text"  :value="validateurs" />
             </div>
         </div>
     
-        <button class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-sm">Creer</button>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-sm">Creer</button>
     </form>
 </div>
 

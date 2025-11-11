@@ -1,6 +1,7 @@
 from http.client import HTTPException
 
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -91,7 +92,8 @@ def budget_sheet_list(request):
     # Feuilles où l'utilisateur est partenaire
     feuilles_partagees_ids = SheetPartener.objects.filter(
         user=request.user.profile
-    ).values_list('sheet_id', flat=True).distinct()
+    ).exclude(sheet__user=request.user.profile).values_list('sheet_id', flat=True).distinct()
+
     feuilles_partagees = BudgetSheet.objects.filter(
         id__in=feuilles_partagees_ids,
         status=True
@@ -129,7 +131,9 @@ def budget_sheet_detail(request, pid):
 
     try:
         print("je suis pid", pid)
-        budget_sheet = get_object_or_404(BudgetSheet, pid=pid, status=True)
+        budget_sheet = get_object_or_404(BudgetSheet.objects.prefetch_related("type_budgets_sheet"),
+                                         pid=pid, status=True)
+        # budget_sheet = budget_sheet.prefetch_related("type_budgets_sheet")
 
         # Vérifier les permissions (propriétaire ou partenaire)
         is_owner = budget_sheet.user == request.user.profile
@@ -150,9 +154,6 @@ def budget_sheet_detail(request, pid):
         print("je suis dans erreurs")
         return render(request, 'gestionbuget/budget_sheet_not_found.html', {'pid': pid})
 
-    date = datetime.strptime("2023-07-01", "%Y-%m-%d")
-
-
 
     context = {
         'budget_sheet': budget_sheet,
@@ -162,7 +163,8 @@ def budget_sheet_detail(request, pid):
         "filter" : filter,
         "partenaires": SheetPartener.objects.filter(sheet=budget_sheet),
         'is_owner': is_owner,
-        'is_partner': is_partner
+        'is_partner': is_partner,
+        "form_section": FormSection()
     }
 
     return render(request, 'gestionbuget/budget_sheet_details.html', context)
@@ -175,7 +177,8 @@ def chart_budget(request, pid):
 
 
     try:
-        budget_sheet = get_object_or_404(BudgetSheet, pid=pid, status=True)
+        budget_sheet = get_object_or_404(BudgetSheet.objects.prefetch_related("type_budgets_sheet"),
+                                         pid=pid, status=True)
 
         # Vérifier les permissions (propriétaire ou partenaire)
         is_owner = budget_sheet.user == request.user.profile
@@ -197,7 +200,8 @@ def chart_budget_month(request, pid):
     """
     month_filter = request.GET.get('month_filter', None)
     try:
-        budget_sheet = get_object_or_404(BudgetSheet, pid=pid, status=True)
+        budget_sheet = get_object_or_404(BudgetSheet.objects.prefetch_related("type_budgets_sheet"),
+                                         pid=pid, status=True)
 
         # Vérifier les permissions (propriétaire ou partenaire)
         is_owner = budget_sheet.user == request.user.profile
@@ -221,7 +225,7 @@ def chart_budget_month(request, pid):
 @login_required
 def created_budget(request, pid):
     # try:
-    budget_sheet = get_object_or_404(BudgetSheet, pid=pid, status=True)
+    budget_sheet = get_object_or_404(BudgetSheet.objects.prefetch_related("type_budgets_sheet"), pid=pid, status=True)
 
     # Vérifier les permissions (propriétaire ou partenaire)
     is_owner = budget_sheet.user == request.user.profile
@@ -264,10 +268,37 @@ def created_budget(request, pid):
 
 @login_required
 def create_section(request, pid):
+    budget_sheet = get_object_or_404(BudgetSheet, pid=pid, status=True)
+
+    # Vérifier les permissions (propriétaire ou partenaire)
+    is_owner = budget_sheet.user == request.user.profile
+    is_partner = SheetPartener.objects.filter(sheet=budget_sheet, user=request.user.profile).exists()
+    forms = FormSection()
+
+    if not (is_owner or is_partner):
+        return redirect('gestionbudget:budget_sheet_list')
+
+    if request.method == "POST":
+        forms = FormSection(request.POST)
+
+        if forms.is_valid():
+            f = forms.save(commit=False)
+            f.user = request.user.profile
+            f.budget_sheet = budget_sheet
+            f.save()
+            context = {
+                "form_section": FormSection(),
+                "budget_sheet":budget_sheet,
+                "type_budget": f
+            }
+            return render(request,"gestionbuget/htmx/section/creaate_section.html", context , status=201)
     context = {
-        "form": FormSection()
+        "form_section":forms ,
+        "budget_sheet": budget_sheet
     }
-    return render(request, "", )
+    return render(request, "gestionbuget/htmx/section/creaate_section.html", context, status=400)
+
+
 
 
 @login_required
@@ -549,6 +580,7 @@ def remove_partner_htmx(request, pid):
         'error': 'Méthode non autorisée.'
     }, status=405)
 
+
 @login_required
 def send_invitation_htmx(request, pid):
     print(f"Vue send_invitation_htmx appelée avec pid: {pid}")
@@ -669,6 +701,7 @@ def send_invitation_htmx(request, pid):
         'error': 'Méthode non autorisée.'
     }, status=405)
 
+
 @login_required
 def accept_invitation(request, token):
     """
@@ -725,6 +758,7 @@ def accept_invitation(request, token):
             return render(request, 'gestionbuget/invitation_rejected.html', {'invitation': invitation})
     
     return render(request, 'gestionbuget/accept_invitation.html', {'invitation': invitation})
+
 
 @login_required
 def demandes_list(request, pid):
@@ -846,10 +880,11 @@ def create_demande_htmx(request, pid):
 
 
 @login_required
-def update_demande_status_htmx(request, pid, demande_pid):
+def update_demande_status_htmx(request, pid):
     """
     Mettre à jour le statut d'une demande via HTMX
     """
+    demande_pid = request.POST.get("demande_pid", None)
     print(f"Debug: pid={pid}, demande_pid={demande_pid}")
     budget_sheet = get_object_or_404(BudgetSheet, pid=pid)
     print(f"Debug: budget_sheet trouvé: {budget_sheet.title}")
@@ -870,6 +905,8 @@ def update_demande_status_htmx(request, pid, demande_pid):
         demande.user_validete and 
         demande.user_validete.user == request.user.profile
     ) or budget_sheet.user == request.user.profile
+
+    print("je suis entrain de verifier ", can_validate)
     
     if not can_validate:
         return render(request, 'gestionbuget/htmx/user_error.html', {
@@ -890,6 +927,7 @@ def update_demande_status_htmx(request, pid, demande_pid):
         # Mettre à jour la demande
         print(f"Debug: Ancien statut: {demande.status}")
         demande.status = new_status
+        demande.save()
         print(f"Debug: Nouveau statut: {demande.status}")
         
         if amount_reel:
@@ -932,10 +970,11 @@ def update_demande_status_htmx(request, pid, demande_pid):
         # Ajouter un header HTMX pour déclencher un événement
         response['HX-Trigger'] = 'closeValidateSlide'
         return response
-    
+    print("ok suis à la sortie ")
     return render(request, 'gestionbuget/htmx/user_error.html', {
         'error': 'Méthode non autorisée.'
     }, status=405)
+
 
 @login_required
 def demande_detail(request, pid, demande_pid):
@@ -1018,6 +1057,7 @@ def add_comment_htmx(request, pid, demande_pid):
     return render(request, 'gestionbuget/htmx/user_error.html', {
         'error': 'Méthode non autorisée.'
     }, status=405)
+
 
 def get_possible_validators(budget_sheet, user_profile):
     """

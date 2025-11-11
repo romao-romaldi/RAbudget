@@ -29,7 +29,7 @@
                 Mes feuilles créées ({{ mes_feuilles.count }})
             </h2>
 
-            <div class="grid gap-4" id="mes_feuilles_section">
+            <div class="grid gap-4" id="list_budget_sheet">
                 {% for budget in mes_feuilles %}
                 <div x-data="{ modalOpen: false }"
                      @keydown.escape.window="modalOpen = false"

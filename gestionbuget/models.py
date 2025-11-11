@@ -83,9 +83,10 @@ class TypeBudget(models.Model):
     is_due_date = models.BooleanField(default=False, help_text="Indicates if the budget has an expiration date")
     is_date_created = models.BooleanField(default=False, help_text="Indicates if the budget has a creation date")
     is_compte = models.BooleanField(default=False, help_text="Indicates if the budget is a compte type")
-    is_salary = models.BooleanField(default=False, help_text="Indicates if the budget is a salary type")
     is_income = models.BooleanField(default=False)
     is_spent = models.BooleanField(default=False)
+    is_saving = models.BooleanField(default=False)
+    is_transaction = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 

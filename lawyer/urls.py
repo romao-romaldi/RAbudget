@@ -20,5 +20,10 @@ urlpatterns = [
     path('settings/gestion_active/', gestion_active_views.gestion_active_views, name='gestion_active'),
     path('settings/add_type_activiter/', gestion_active_views.add_type_activiter, name='add_type_activiter'),
     path('settings/details_type_active/<int:id>/', gestion_active_views.details_type_active,name='details_type_active'),
+    path('settings/details_type_active/active_champs_types/<int:id>/<int:champs_id>',
+         gestion_active_views.active_champs_types,name='active_champs_types'),
+
+    path('settings/details_type_active/active_champs_types/categories/<int:id>/',
+         gestion_active_views.add_categorie_activity,name='add_categorie_activity'),
 
 ]

@@ -16,7 +16,7 @@ class Todo(models.Model):
     is_validated = models.BooleanField(default=False)
     status = models.CharField(choices=TodoStatusChoices, default='pending')
     priority = models.CharField(max_length=20, null=True, blank=True)
-    date_execution = models.DateTimeField(null=False, blank=False)
+    date_execution = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -36,9 +36,8 @@ class Todo(models.Model):
         self.save()
 
     def mark_validated(self):
-        if self.completed and self.status == "completed":
-            self.is_validated = True
-            self.save()
+        self.is_validated = True
+        self.save()
 
     def __str__(self):
         return self.title

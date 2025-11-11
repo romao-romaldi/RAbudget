@@ -75,11 +75,11 @@
 
                     <!-- Badge pour indiquer le statut -->
                     {% if is_partner and not is_owner %}
-                        <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                        <span class="px-3 py-3 bg-green-100 text-center text-green-800 text-xs font-medium rounded-full">
                             Partenaire
                         </span>
                     {% elif is_owner %}
-                        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                        <span class="px-3 py-3 bg-blue-100 text-center text-blue-800 text-xs font-medium rounded-full">
                             Propriétaire
                         </span>
                     {% endif %}
@@ -92,7 +92,7 @@
                 <h3>Filtre</h3>
                 <form action="{% url 'gestionbudget:budget_sheet_detail' budget_sheet.pid %}" method="get">
                     <input type="month" name="month_filter" value="{{filter}}"
-                    class="border rounded-md p-2" placeholder="Filtrer par mois">
+                    class="border rounded-md p-2" placeholder="Filtrer par mois: 2025-06">
                     <button type="submit" class="px-4 py-2 bg-teal-700 text-white rounded-md">Filtrer</button>
                     
                     {% if filter %}
@@ -108,8 +108,6 @@
             </div>
 
             {% include "gestionbuget/htmx/section/section_core.html" %}
-
-
         </div>
 
         <div class="p-3 bg-teal-50 rounded-md grid md:grid-cols-5">
@@ -213,14 +211,16 @@
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-6">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-6" id="type_budget_list">
             {% for type_budget in type_budgets %}
-            <div x-data="{ modalOpen: false, type:'' }" 
+            <div x-data="{ modalOpen: false, type:'' }"
                 @keydown.escape.window="modalOpen = false" :class="{ 'z-40': modalOpen }"
                 class="border rounded-md p-3 bg-white shadow-sm  mb-8">
                 <div class="flex items-center justify-between  pb-4 px-2">
                     <h2 class="text-lg font-semibold ">{{ type_budget.name }}</h2>
                     <div class="flex items-center gap-2">
+                        {% comment %}
                         {% if type_budget.is_spent and is_partner %}
                             <button @click="modalOpen=true, type='demande',
                              demande_type_budget={'pid':'{{type_budget.id}}', 'name':'{{type_budget.name}}'} "
@@ -228,10 +228,11 @@
                             title="Faire une demande "
                             >+</button>
                         {% endif %}
-                        {% if is_owner %}
+                        {% endcomment %}
+                        
                         <button @click="modalOpen=true, type='' "
                         class="text-md rounded-full  px-3 py-1.5 shadow text-teal-500 hover:bg-teal-700">+</button>
-                        {% endif %}
+                        
                     </div>
                 </div>
                 <div class=" overflow-x-auto " id="tbody_budget_{{type_budget.name}}">

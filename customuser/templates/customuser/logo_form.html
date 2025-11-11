@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block navbar_menu %}
+<a href="{% url 'gestionbudget:budget_sheet_list' %}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Gestion Budget</a>
+<a href="{% url 'resume:resume_list' 'default' %}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Résumés</a>
+<a href="{% url 'customuser:logo_list' %}" class="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Gestion Logos</a>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{% url 'customuser:logo_list' %}" class="text-sm font-medium text-gray-700 hover:text-blue-600">
+                            Gestion des Logos
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="ml-1 text-sm font-medium text-gray-500">{{ action }} Logo</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+            <h1 class="text-3xl font-bold text-gray-900 mt-4">{{ action }} un Logo</h1>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="bg-white shadow-sm rounded-lg">
+            <form method="post" enctype="multipart/form-data" class="p-6 space-y-6">
+                {% csrf_token %}
+
+                <!-- Aperçu du logo actuel (pour modification) -->
+                {% if logo %}
+                <div class="border-b border-gray-200 pb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Logo actuel</h3>
+                    <div class="flex items-center space-x-4">
+                        <img src="{{ logo.image.url }}" alt="{{ logo.nom }}" class="w-16 h-16 object-contain rounded-lg border border-gray-200">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">{{ logo.nom }}</p>
+                            <p class="text-sm text-gray-500">{{ logo.description }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Champ nom -->
+                <div>
+                    <label for="{{ form.nom.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Nom du logo <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.nom }}
+                    {% if form.nom.help_text %}
+                    <p class="mt-1 text-sm text-gray-500">{{ form.nom.help_text }}</p>
+                    {% endif %}
+                    {% if form.nom.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.nom.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Champ image -->
+                <div>
+                    <label for="{{ form.image.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Image du logo <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.image }}
+                    {% if form.image.help_text %}
+                    <p class="mt-1 text-sm text-gray-500">{{ form.image.help_text }}</p>
+                    {% endif %}
+                    {% if form.image.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.image.errors.0 }}</p>
+                    {% endif %}
+
+                    <!-- Conseils pour l'image -->
+                    <div class="mt-2 p-3 bg-blue-50 rounded-md">
+                        <h4 class="text-sm font-medium text-blue-900 mb-2">Conseils pour le logo :</h4>
+                        <ul class="text-sm text-blue-800 space-y-1">
+                            <li>• Formats acceptés : PNG, JPG, SVG</li>
+                            <li>• Taille recommandée : 100x100px maximum</li>
+                            <li>• Utilisez des images carrées pour un meilleur rendu</li>
+                            <li>• Préférez un fond transparent (PNG)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Champ description -->
+                <div>
+                    <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Description
+                    </label>
+                    {{ form.description }}
+                    {% if form.description.help_text %}
+                    <p class="mt-1 text-sm text-gray-500">{{ form.description.help_text }}</p>
+                    {% endif %}
+                    {% if form.description.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Champ actif -->
+                <div class="flex items-center">
+                    {{ form.est_actif }}
+                    <label for="{{ form.est_actif.id_for_label }}" class="ml-2 block text-sm text-gray-900">
+                        Logo actif (sera affiché dans la navbar)
+                    </label>
+                </div>
+                {% if form.est_actif.help_text %}
+                <p class="text-sm text-gray-500">{{ form.est_actif.help_text }}</p>
+                {% endif %}
+
+                <!-- Boutons d'action -->
+                <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                    <a href="{% url 'customuser:logo_list' %}"
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Annuler
+                    </a>
+                    <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        {{ action }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

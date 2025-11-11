@@ -48,3 +48,20 @@ class TypeActivity(models.Model):
 
     def __str__(self):
         return self.name
+
+class CategoryActivity(models.Model):
+    type_activity = models.OneToOneField(TypeActivity, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class SubCategory(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.TextField(null=True, blank=True)
+    status = models.BooleanField(default=True)
+
+    category = models.ForeignKey(CategoryActivity, related_name="sub_categorie", on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

@@ -1,136 +1,142 @@
 <div class="py-4 flex flex-col gap-6">
     <div>
         <h3 class="font-bold">DETAILS DE LA TACHE</h3>
+        {% if success %}
+        <div class="mt-2 p-3 bg-green-100 border border-green-300 rounded-md">
+            <p class="text-green-700">{{ message }}</p>
+        </div>
+        {% endif %}
+        {% if error %}
+        <div class="mt-2 p-3 bg-red-100 border border-red-300 rounded-md">
+            <p class="text-red-700">{{ error }}</p>
+        </div>
+        {% endif %}
     </div>
-    <form class="flex flex-col gap-4">
-        <div>
-            <label for="statuts" class="block text-lg font-bold text-gray-600">Validateurs</label>
-            <div x-data="{ statuts: [] }" class="flex justify-between gap-2 text-sm font-bold">
-                <!-- Ajoute d'autres responsables si besoin -->
-                <label 
-                    for="statut3"
-                    :class="statuts.includes('waiting') ? 'border-cyan-500 bg-cyan-50' : 'border bg-white'"
-                    class="flex items-center space-x-2 rounded-lg px-2 py-1 cursor-pointer transition-colors duration-200 mt-2"
-                >
-                    
-                    <span class="text-sm">A faire</span>
-                    <input
-                        type="checkbox"
-                        id="statut3"
-                        name="status"
-                        value="waiting"
-                        class="hidden"
-                        :disabled="statuts.includes('waiting') ? true : false"
-                        x-model="statuts"
-                    />
-                </label>
-    
-                <label
-                    for="statuts4"
-                    :class="statuts.includes('inprocessing') ? 'border-cyan-500 bg-cyan-50' : 'border bg-white'"
-                    class="flex items-center space-x-2 rounded-lg px-2 py-1 cursor-pointer transition-colors duration-200 mt-2"
-                >
-                    
-                    <span class="text-sm">En cours</span>
-                    <input
-                        type="checkbox"
-                        id="statuts4"
-                        name="status"
-                        value="inprocessing"
-                        :disabled="statuts.includes('inprocessing') ? true : false"
-                        class="hidden"
-                        x-model="statuts"
-                    />
-                </label>
-    
-                <label
-                    for="statuts5"
-                    :class="statuts.includes('completed') ? 'border-cyan-500 bg-cyan-50' : 'border bg-white'"
-                    class="flex items-center space-x-2 rounded-lg px-2 py-1 cursor-pointer transition-colors duration-200 mt-2"
-                >
-                    
-                    <span class="text-sm">Terminée</span>
-                    <input
-                        type="checkbox"
-                        id="statuts5"
-                        name="status"
-                        value="completed"
-                        :disabled="statuts.includes('completed') ? true : false"
-                        class="hidden"
-                        x-model="statuts"
-                    />
-                </label>
+
+    <!-- Informations principales de la todo -->
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xl font-bold text-gray-800">{{ todo.title }}</h2>
+            {% if todo.user.user == user %}
+            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">CRÉÉ PAR MOI</span>
+            {% endif %}
+        </div>
+        <p class="text-gray-700 mb-3">{{ todo.description }}</p>
+
+        <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+                <span class="font-semibold text-gray-600">Statut :</span>
+                {% if todo.status == 'pending' %}
+                    <span class="ml-2 px-2 py-1 bg-yellow-200 text-yellow-800 rounded">En attente</span>
+                {% elif todo.status == 'in_progress' %}
+                    <span class="ml-2 px-2 py-1 bg-blue-200 text-blue-800 rounded">En cours</span>
+                {% elif todo.status == 'completed' %}
+                    <span class="ml-2 px-2 py-1 bg-green-200 text-green-800 rounded">✅ Terminée</span>
+                {% else %}
+                    <span class="ml-2 px-2 py-1 bg-gray-200 text-gray-800 rounded">{{ todo.status }}</span>
+                {% endif %}
+            </div>
+            <div>
+                <span class="font-semibold text-gray-600">Créée le :</span>
+                <span class="ml-2">{{ todo.created_at|date:"d M Y à H:i" }}</span>
+            </div>
+            {% if todo.date_execution %}
+            <div>
+                <span class="font-semibold text-gray-600">À exécuter le :</span>
+                <span class="ml-2">{{ todo.date_execution|date:"d M Y à H:i" }}</span>
+            </div>
+            {% endif %}
+            <div>
+                <span class="font-semibold text-gray-600">Priorité :</span>
+                <span class="ml-2">{{ todo.priority|default:"Non définie" }}</span>
             </div>
         </div>
-    
-    
-        <div>
-            <!-- <label for="taskName" class="block text-sm font-medium text-gray-700">Nom de la Tâche</label> -->
-            <input type="text" id="taskName" name="taskName" disabled
-            required class="mt-1 block w-full border-0 border-gray-300 rounded-md shadow-sm focus:border-indigo-500
-                focus:ring-indigo-500 font-bold text-xl sm:text-sm"
-                placeholder="Entrez le nom de la tâche ici...">
-        </div>
-        <div class="mt-4">
-            <!-- <label for="taskDescription" class="block text-sm font-medium text-gray-700">Description</label> -->
-            <textarea id="taskDescription" name="taskDescription" rows="8"  disabled
-            required class="mt-1 block w-full border-0 border-gray-300 rounded-md shadow-sm focus:border-indigo-500
-                focus:ring-indigo-500 sm:text-sm "
-                placeholder="Entrez la description de la tâche ici..."
-                ></textarea>
-        </div>
-        <div>
-            <div class="flex flex-col" disabled>
-                <label for="">date realisation et heure (facultatif)</label>
-                <input type="datetime-local">
+    </div>
+
+    <!-- Section Responsables -->
+    <div>
+        <h4 class="font-bold text-gray-600 mb-3">Responsables</h4>
+        <div class="space-y-2">
+            {% for responsable in responsible %}
+            <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
+                <img class="w-10 h-10 rounded-full border-2 border-white shadow"
+                     src="https://randomuser.me/api/portraits/men/32.jpg"
+                     alt="{{ responsable.user.profile.last_name }}">
+                <span class="text-sm font-medium">{{ responsable.user.profile.last_name }} {{ responsable.user.profile.first_name }}</span>
+                {% if responsable.user == user %}
+                <span class="ml-auto text-xs bg-green-100 text-green-800 px-2 py-1 rounded">RESPONSABLE</span>
+                {% endif %}
             </div>
-    
+            {% empty %}
+            <p class="text-sm text-gray-500 italic">Aucun responsable assigné</p>
+            {% endfor %}
         </div>
-    
-        <div class="mt-4">
-            <label for="taskPriority" class="block text-lg font-bold text-gray-600">Priorité</label>
-            <div class="mt-2">
-                <label class="flex items-start p-2 text-xs space-x-3 bg-white border rounded-md shadow-sm
-                 hover:bg-gray-50 border-neutral-200/70">
-                    <span class="relative flex flex-col text-left space-y-1.5 leading-none">
-                        <span x-text="option.title" class="font-semibold"></span>
-                    </span>
-                </label>
+    </div>
+
+    <!-- Section Validateurs -->
+    <div>
+        <h4 class="font-bold text-gray-600 mb-3">Validateurs</h4>
+        <div class="space-y-2">
+            {% for validation in validations %}
+            <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
+                <img class="w-10 h-10 rounded-full border-2 border-white shadow"
+                     src="https://randomuser.me/api/portraits/men/32.jpg"
+                     alt="{{ validation.user.profile.last_name }}">
+                <span class="text-sm font-medium">{{ validation.user.profile.last_name }} {{ validation.user.profile.first_name }}</span>
+                {% if validation.user == user %}
+                <span class="ml-auto text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">VALIDATEUR</span>
+                {% endif %}
+                {% if validation.is_validated %}
+                <span class="ml-auto text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Validé</span>
+                {% else %}
+                <span class="ml-auto text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">En attente</span>
+                {% endif %}
             </div>
+            {% empty %}
+            <p class="text-sm text-gray-500 italic">Aucun validateur assigné</p>
+            {% endfor %}
         </div>
-    
-        <div>
-            <div for="responsable" class="block text-lg font-bold text-gray-600">Responsables</div>
-            <label 
-               
-                class="flex items-center space-x-2 rounded-lg px-2 py-1 cursor-pointer transition-colors duration-200 mt-2"
-            >
-                <span class="h-10 w-10 rounded-full border bg-zinc-200 flex items-center justify-center overflow-hidden">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Utilisateur 3" class="h-10 w-10 rounded-full object-cover" />
-                </span>
-                <span class="text-sm">Utilisateur 3</span>
-                
-            </label>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-2 pt-4 border-t">
+        {% if todo.completed %}
+        <div class="flex-1 bg-green-100 text-green-800 py-2 px-4 rounded-lg text-center font-medium">
+            ✅ Tâche terminée
         </div>
-    
-        <div>
-            <div for="validateur" class="block text-lg font-bold text-gray-600">Validateurs</div>
-            <label 
-               
-                class="flex items-center space-x-2 rounded-lg px-2 py-1 cursor-pointer transition-colors duration-200 mt-2"
-            >
-                <span class="h-10 w-10 rounded-full border bg-zinc-200 flex items-center justify-center overflow-hidden">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Utilisateur 3" class="h-10 w-10 rounded-full object-cover" />
-                </span>
-                <span class="text-sm">Utilisateur 3</span>
-                
-            </label>
-        </div>
-    
-        <div>
-                <button class="w-full border border-blue-600 hover:border-blue-700 py-2 rounded-sm">Ajouter un commentaire</button>
-                <button class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-sm">Valider</button>
-        </div>
-    
-    </form>
+        {% else %}
+        <button class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors"
+                hx-get="{% url 'todo:todo_update' todo.id %}"
+                hx-target="#modalTODO"
+                hx-swap="innerHTML">
+            Modifier la tâche
+        </button>
+
+        {% for validation in validations %}
+            {% if validation.user == user and not todo.is_validated %}
+            <button class="flex-1 border border-blue-600 hover:border-blue-700 text-blue-600 py-2 px-4 rounded-lg transition-colors"
+                    hx-post="{% url 'todo:todo_validate' todo.id %}"
+                    hx-target="#modalTODO"
+                    hx-swap="innerHTML"
+                    hx-on-htmx-after-request="if(event.detail.xhr.status === 200) { slideOverOpen = false; location.reload(); }"
+                    hx-confirm="Êtes-vous sûr de vouloir valider cette tâche ?">
+                Valider
+            </button>
+            {% endif %}
+        {% endfor %}
+
+        {% for responsable in responsible %}
+            {% if responsable.user == user and todo.is_validated and not todo.completed %}
+            <button class="flex-1 border border-green-600 hover:border-green-700 text-green-600 py-2 px-4 rounded-lg transition-colors"
+                    hx-post="{% url 'todo:todo_complete' todo.id %}"
+                    hx-target="#modalTODO"
+                    hx-swap="innerHTML"
+                    hx-on-htmx-after-request="if(event.detail.xhr.status === 200) { slideOverOpen = false; location.reload(); }"
+                    hx-confirm="Êtes-vous sûr de vouloir terminer cette tâche ?">
+                Terminer
+            </button>
+            {% endif %}
+        {% endfor %}
+        {% endif %}
+    </div>
 </div>

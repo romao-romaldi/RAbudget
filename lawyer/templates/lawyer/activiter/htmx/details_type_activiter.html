@@ -14,18 +14,22 @@
                 <div class="p-4 pt-0 mb-8 opacity-70 grid grid-cols-2 gap-8 ">
                     <div class="shadow-md py-6 px-3 rounded-lg space-y-4 bg-teal-50">
                         <h3 class="text-lg font-semibold text-blue-600">Champs actif</h3>
-                        <div class="space-y-2">
+                        <div class="space-y-3" id="champ_active">
                             {% for champs  in used_champs %}
                                 <div class="flex justify-between items-center gap-2 px-4 py-2 border border-gray-900
-                                text-base rounded-md ">
+                                text-base rounded-md "
+                                id="champ_{{champs.id}}"
+                                >
                                     <div>
                                         <p>{{champs.name}}</p>
                                         <span class="text-sm text-gray-700">{{champs.description}}</span>
                                     </div>
                                     <div>
-                                        <div class="flex items-center gap-2">
+                                        <form class="flex items-center gap-2"
+                                        hx-post="{% url 'lawyer:active_champs_types' type_activity.id champs.id %}"
+                                        hx-target="#champ_{{champs.id}}" hx-trigger="submit" hx-swap="outerHTML">
                                             <div x-data="{ switchOn: true }" class="flex items-center justify-center space-x-4">
-                                                <input id="thisId" type="checkbox" name="switch" class="hidden" :checked="switchOn">
+                                                <input id="thisId" type="checkbox" name="status" class="hidden" :checked="switchOn">
                                                 <label @click="$refs.switchButton.click(); $refs.switchButton.focus()" :id="$id('switch')" 
                                                     :class="{ 'text-blue-600': switchOn, 'text-gray-700': ! switchOn }"
                                                     class="text-xs font-medium select-none"
@@ -34,7 +38,7 @@
                                                 </label>
                                                 <button 
                                                     x-ref="switchButton"
-                                                    type="button" 
+                                                    type="submit" 
                                                     @click="switchOn = ! switchOn"
                                                     :class="switchOn ? 'bg-blue-600' : 'bg-neutral-200'" 
                                                     class="relative inline-flex h-4 py-0.5 ml-4 rounded-full focus:outline-none w-8"
@@ -42,7 +46,7 @@
                                                     <span :class="switchOn ? 'translate-x-[18px]' : 'translate-x-0.5'" class="w-3 h-3 duration-200 ease-in-out bg-white rounded-full shadow-md"></span>
                                                 </button>
                                             </div>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                             {% endfor %}
@@ -51,17 +55,21 @@
 
                     <div class="space-y-4">
                         <h3 class="text-lg font-semibold">Champs inactif</h3>
-                        <div class="space-y-2">
+                        <div class="space-y-3" id="champ_inactive">
                             {% for champs  in unused_champs %}
-                            <div class="flex justify-between items-center gap-2 px-4 py-2 border rounded-md ">
+                            <div class="flex justify-between items-center gap-2 px-4 py-2 border rounded-md "
+                            id="champ_in_{{champs.id}}">
                                 <div>
-                                    <p>categorie name</p>
-                                    <span class="text-sm text-gray-500">my description</span>
+                                    <p>{{champs.name}}</p>
+                                    <span class="text-sm text-gray-500">{{champs.name}}</span>
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <div x-data="{ switchOn: false }" class="flex items-center justify-center space-x-4">
-                                            <input id="thisId" type="checkbox" name="switch" class="hidden" :checked="switchOn">
+                                        <form x-data="{ switchOn: false }" class="flex items-center justify-center space-x-4"
+                                        hx-post="{% url 'lawyer:active_champs_types' type_activity.id champs.id %}" 
+                                        hx-target="#champ_in_{{champs.id}}" hx-trigger="submit" hx-swap="outerHTML"
+                                        >
+                                            <input id="thisId" type="checkbox" name="status" class="hidden" :checked="switchOn">
                                             <label @click="$refs.switchButton.click(); $refs.switchButton.focus()" :id="$id('switch')" 
                                                 :class="{ 'text-blue-600': switchOn, 'text-gray-400': ! switchOn }"
                                                 class="text-xs font-medium select-none"
@@ -70,14 +78,14 @@
                                             </label>
                                             <button 
                                                 x-ref="switchButton"
-                                                type="button" 
+                                                type="submit" 
                                                 @click="switchOn = ! switchOn"
                                                 :class="switchOn ? 'bg-blue-600' : 'bg-neutral-200'" 
                                                 class="relative inline-flex h-4 py-0.5 ml-4 rounded-full focus:outline-none w-8"
                                                 x-cloak>
                                                 <span :class="switchOn ? 'translate-x-[18px]' : 'translate-x-0.5'" class="w-3 h-3 duration-200 ease-in-out bg-white rounded-full shadow-md"></span>
                                             </button>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -89,21 +97,24 @@
         </div>
     </div>
 
-
+    {% if categorie %}
     <div class="w-full space-y-3">
         <h3 class="text-base">Catégories</h3>
 
         <div class="w-full grid grid-cols-2 gap-8">
-            <div class="">
+            <div class="space-y-3" id="activity_category">
+                {% for cates in type_activity.categoryactivity.sub_categorie.all %}
                 <div class="flex justify-between items-center gap-2 px-4 py-2 border rounded-md ">
                     <div>
-                        <p>categorie name</p>
-                        <span class="text-sm text-gray-500">my description</span>
+                        <p>{{cates.name}}</p>
+                        <span class="text-sm text-gray-500">{{cates.description}} </span>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <div x-data="{ switchOn: false }" class="flex items-center justify-center space-x-4">
-                                <input id="thisId" type="checkbox" name="switch" class="hidden" :checked="switchOn">
+                            <div x-data="{ switchOn: {% if cates.status %} true {% else %} false {% endif %} }" 
+                            class="flex items-center justify-center space-x-4">
+                                <input id="thisId" type="checkbox" name="switch" class="hidden" :checked="switchOn" 
+                                >
                                 <label @click="$refs.switchButton.click(); $refs.switchButton.focus()" :id="$id('switch')" 
                                     :class="{ 'text-neutral-900': switchOn, 'text-gray-400': ! switchOn }"
                                     class="text-xs font-medium select-none"
@@ -123,13 +134,16 @@
                         </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
 
-            <div class="flex justify-center px-8">
+            <div class="flex justify-center px-8 gap-3">
+                
                 <div class="w-4/5 border rounded-md flex flex-col gap-3 px-2 py-4">
                      <h4 class="text-lg font-semibold text-center">Ajouter une categorie</h4>
 
-                     <form action=""
+                     <form hx-post="{% url 'lawyer:add_categorie_activity' type_activity.id %}"
+                     hx-target="#activity_category" hx-swap="afterbegin" hx-trigger="submit"
                      class="flex flex-col gap-4">
                         <div class="flex flex-col text-base px-3">
                             <label for="name">Nom </label>
@@ -148,7 +162,9 @@
                         </div>
                      </form>
                 </div>
+                
             </div>
         </div>
     </div>
+    {% endif %}
 </div>

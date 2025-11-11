@@ -26,10 +26,12 @@
                 <p class="text-gray-600 mt-2">{{ budget_sheet.title }}</p>
             </div>
             <div class="flex gap-4">
+                {% if budget_sheet.user == request.user.profile %}
                 <button @click="showHierarchieSlide = true"
                    class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
                     Gérer la hiérarchie
                 </button>
+                {% endif %}
                 <button @click="showCreateSlide = true"
                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
                     Nouveau rapport

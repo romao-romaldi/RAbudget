@@ -1,6 +1,34 @@
 {% extends "base.html" %}
 {% load static %}
 
+<!-- Navbar spécifique à l'app resume -->
+{% block navbar_logo %}
+<div class="flex items-center">
+    <!-- Logo personnalisé pour l'app resume -->
+    {% block custom_logo %}
+    <!--
+    Pour utiliser une image comme logo, décommentez et modifiez cette section :
+    <img src="{% static 'images/logo-resume.png' %}" alt="Logo Résumés" class="w-8 h-8 mr-3">
+    -->
+    <!-- Logo personnalisé pour l'app resume (lettre stylisée) -->
+    <div class="w-8 h-8 bg-purple-600 rounded-md flex items-center justify-center mr-3">
+        <span class="text-white font-bold text-lg">R</span>
+    </div>
+    {% endblock %}
+    <span class="font-bold text-xl text-gray-900">{% block site_name %}ZCABINET{% endblock %}</span>
+</div>
+{% endblock %}
+
+{% block navbar_menu %}
+<a href="{% url 'gestionbudget:budget_sheet_list' %}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Gestion Budget</a>
+<a href="{% url 'resume:resume_list' 'default' %}" class="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Résumés</a>
+{% endblock %}
+
+{% block navbar_mobile_menu %}
+<a href="{% url 'gestionbudget:budget_sheet_list' %}" class="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">Gestion Budget</a>
+<a href="{% url 'resume:resume_list' 'default' %}" class="text-gray-900 block px-3 py-2 text-base font-medium">Résumés</a>
+{% endblock %}
+
 {% block content %}
 <div class="min-h-screen bg-gray-50">
     {% block resume_content %}

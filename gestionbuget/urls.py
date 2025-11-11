@@ -5,11 +5,14 @@ from .views import (
     budget_sheet_detail,
     budget_sheet_create,
     created_budget,
+    create_section,
     chart_budget,
     chart_budget_month,
     create_demande,
     budget_sheet_delete,
-    manage_users, create_user_htmx, remove_partner_htmx, send_invitation_htmx, accept_invitation, demandes_list, create_demande_htmx, update_demande_status_htmx, demande_detail, add_comment_htmx
+    manage_users, create_user_htmx, remove_partner_htmx, send_invitation_htmx,
+    accept_invitation, demandes_list,
+    create_demande_htmx, update_demande_status_htmx, demande_detail, add_comment_htmx
 
 )
 
@@ -25,6 +28,9 @@ urlpatterns = [
     path("chart_budget/<str:pid>/", chart_budget, name="chart_budget"),
     path("chart_budget_month/<str:pid>", chart_budget_month, name="chart_budget_month"),
 
+    #section
+    path("create-section/<str:pid>/", create_section, name="create_section"),
+
     #demande gestion partie
     path("create_demande/<str:pid_sheet>/", create_demande, name="create_demande"),
     
@@ -38,7 +44,7 @@ urlpatterns = [
     # Gestion des demandes
     path('demandes/<str:pid>/',demandes_list, name='demandes_list'),
     path('create_demande_htmx/<str:pid>/',create_demande_htmx, name='create_demande_htmx'),
-    path('update_demande_status_htmx/<str:pid>/<str:demande_pid>/',update_demande_status_htmx, name='update_demande_status_htmx'),
+    path('update_demande_status_htmx/<str:pid>/',update_demande_status_htmx, name='update_demande_status_htmx'),
     path('demande_detail/<str:pid>/<str:demande_pid>/',demande_detail, name='demande_detail'),
     path('add_comment_htmx/<str:pid>/<str:demande_pid>/',add_comment_htmx, name='add_comment_htmx'),
 ]

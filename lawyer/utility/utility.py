@@ -18,6 +18,8 @@ class MapperTypeActivity:
         self.data_check = data_check
         self.liste_champs = {}
 
+        self.mapper_()
+
     def mapper_(self):
         """
             retourne un dictionnaire avec comme clé le nom du champ
@@ -30,7 +32,7 @@ class MapperTypeActivity:
                 self.liste_champs[champ.name] = {"name": champ.name,
                                                  "type_champs": champ.type_champs,"required": champ.required}
 
-    def verification_champs_(self, item:tuple):
+    def _verification_champs(self, item:tuple):
         """
             cette méthode permet de vérifier si les champs envoyés dans data
             correspondent aux champs du type d'activité
@@ -52,7 +54,7 @@ class MapperTypeActivity:
 
         return {"status": False, "message": "Le champ n'existe pas dans le type d'activité."}
 
-    def checked_required_champs_(self, champs, item):
+    def _checked_required_champs(self, champs, item):
         if champs and item:
             return {"status": True, "message": "Le champ est requis et la valeur est fournie."}
         elif not champs:
@@ -60,13 +62,17 @@ class MapperTypeActivity:
 
         return {"status": False, "message": "Le champ est requis mais la valeur est manquante."}
 
-    def checked_type_champs_(self, champs, item):
+    def _checked_type_champs(self, champs, item):
         pass
 
 
     def checked_champs(self):
         for data in self.data_check.items():
             item = self.verification_champs_(data)
+
+
+    def champs_print(self):
+        return self.liste_champs
 
 
 

@@ -31,8 +31,146 @@
                         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>  
                     </button>
                 </div>
-                <div class="relative w-auto pb-8">
+                <div class="relative w-auto pb-8 pt-6 space-y-6">
+
+                    <form action="" class="space-y-6 "
+                    hx-post="{% url 'gestionbudget:create_section' budget_sheet.pid %}" hx-target="#section-created" 
+                    hx-trigger="submit" hx-oob="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' id="section-created"
+                    @htmx:after-request="handleAddBudget">
+
+                        <div class="flex flex-col gap-2">
+                            <label for="{{form.title.id_for_label}}" class="block text-sm font-medium text-gray-700">Nom de section</label>
+                            {{form_section.name.errors }}
+                            {{form_section.name }}
+                        </div>
+    
+                        <div class="flex flex-col gap-2">
+                            <label for="{{form.title.id_for_label}}" class="block text-sm font-medium text-gray-700">Description de section</label>
+                            {{form_section.description.errors }}
+                            {{form_section.description }}
+                        </div>
+    
+                        <div 
+                        x-data="{
+                            is_saving: false,
+                            is_spent: false,
+                            is_transaction: false,
+    
+                            get get_spent() {
+                                return this.is_spent
+                            },
+                            get get_transaction() {
+                              
+                                return this.is_transaction
+                            },
+                            get get_saving() {
+                                
+                                return this.is_saving
+                            },
+    
+                            theSwitch(name) {
+                                if (name === 'spent') {
+                                    this.is_spent = !this.is_spent
+                                    this.is_transaction = false
+                                    this.is_saving = false
+                                }
+                                else if (name === 'saving') {
+                                    this.is_spent = false
+                                    this.is_transaction = false
+                                    this.is_saving = !this.is_saving
+                                }
+    
+                                else if (name === 'transaction') {
+                                    this.is_spent = false
+                                    this.is_transaction = !this.is_transaction
+                                    this.is_saving = false
+                                }
+                            },
+    
+                        }"
+    
+                        class="flex flex-col gap-4 "
+                        >
+                            <h3>Type section</h3>
+    
+                            <div x-data="{ get switchOn() {return get_spent } }" class="flex items-center justify-between space-x-2
+                            border rounded-md px-4 py-2 bg-white">
+                                <!-- <input  type="radio" name="switch" class="hidden" :checked="switchOn"> -->
+                                {{form_section.is_spent}}
+    
+                                <label @click="$refs.switchButton.click(); $refs.switchButton.focus()" :id="$id('switch')" 
+                                    :class="{ 'text-blue-600': switchOn, 'text-gray-800': ! switchOn }"
+                                    class=" select-none"
+                                    x-cloak>
+                                    Dépence
+                                </label>
+                                <button 
+                                    x-ref="switchButton"
+                                    type="button" 
+                                    @click="theSwitch('spent')"
+                                    :class="switchOn ? 'bg-blue-600' : 'bg-neutral-200'" 
+                                    class="relative inline-flex h-6 py-0.5 ml-4 focus:outline-none rounded-full w-10"
+                                    x-cloak>
+                                    <span :class="switchOn ? 'translate-x-[18px]' : 'translate-x-0.5'" class="w-5 h-5 duration-200 ease-in-out bg-white rounded-full shadow-md"></span>
+                                </button>
+        
+                                
+                            </div>
+        
+                            <div x-data="{ get switchOn() {return get_transaction} }" class="flex items-center justify-between space-x-2
+                            border rounded-md px-4 py-2 bg-white">
+                                <!-- <input  type="radio" name="switch" class="hidden" :checked="switchOn"> -->
+                                 {{form_section.is_transaction}}
+                                <label @click="$refs.switchButton.click(); $refs.switchButton.focus()" :id="$id('switch')" 
+                                    :class="{ 'text-blue-600': switchOn, 'text-gray-800': ! switchOn }"
+                                    class="select-none"
+                                    x-cloak>
+                                    Transcation
+                                </label>
+                                <button 
+                                    x-ref="switchButton"
+                                    type="button" 
+                                    @click="theSwitch('transaction')"
+                                    :class="switchOn ? 'bg-blue-600' : 'bg-neutral-200'" 
+                                    class="relative inline-flex h-6 py-0.5 ml-4 focus:outline-none rounded-full w-10"
+                                    x-cloak>
+                                    <span :class="switchOn ? 'translate-x-[18px]' : 'translate-x-0.5'" class="w-5 h-5 duration-200 ease-in-out bg-white rounded-full shadow-md"></span>
+                                </button>
+        
+                                
+                            </div>
+        
+                            <div x-data="{ get switchOn() {return get_saving} }" class="flex items-center justify-between space-x-2
+                            border rounded-md px-4 py-2 bg-white">
+                                <!-- <input  type="radio" name="switch" class="hidden" :checked="switchOn"> -->
+                                 {{form_section.is_saving}}
+                                <label @click="$refs.switchButton.click(); $refs.switchButton.focus()" :id="$id('switch')" 
+                                    :class="{ 'text-blue-600': switchOn, 'text-gray-800': ! switchOn }"
+                                    class=" select-none"
+                                    x-cloak>
+                                    Epargne
+                                </label>
+                                <button 
+                                    x-ref="switchButton"
+                                    type="button" 
+                                    @click="theSwitch('saving')"
+                                    :class="switchOn ? 'bg-blue-600' : 'bg-neutral-200'" 
+                                    class="relative inline-flex h-6 py-0.5 ml-4 focus:outline-none rounded-full w-10"
+                                    x-cloak>
+                                    <span :class="switchOn ? 'translate-x-[18px]' : 'translate-x-0.5'" class="w-5 h-5 duration-200 ease-in-out bg-white rounded-full shadow-md"></span>
+                                </button>
+        
+                                
+                            </div>
+                        </div>
+    
+                        <div>
+                            <button class="px-4 py-2 bg-teal-700 text-white rounded-md w-full hover:bg-teal-500
+                            transition duration-300 ">Ajouter</button>
+                        </div>
+                    </form>
                    
+                 
                 </div>
             </div>
         </div>

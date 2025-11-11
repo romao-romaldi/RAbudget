@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 from decouple import config
+from django.conf.global_settings import LOGIN_URL, LOGOUT_REDIRECT_URL, LOGIN_REDIRECT_URL
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,6 +46,8 @@ INSTALLED_APPS = [
     "gestionbuget",
     "resume",
     "lawyer",
+    "gestiondoc",
+    "gestiontimer",
     #"cabinet",
 
     # external apps
@@ -151,6 +154,10 @@ MEDIA_ROOT = BASE_DIR / "media"
 # INTERNAL_IPS = [
 #     "127.0.0.1",
 # ]
+
+LOGIN_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/login/'
+# LOGIN_REDIRECT_URL = '/'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
