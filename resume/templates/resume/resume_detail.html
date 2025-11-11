@@ -1,0 +1,458 @@
+{% extends "resume/base.html" %}
+{% load static %}
+
+{% block resume_content %}
+<div class="container mx-auto px-4 py-8 max-w-5xl" x-data="{ showEditSlide: false }">
+    <!-- Retour -->
+    <div class="mb-4">
+        <a href="{% url 'resume:resume_list' budget_sheet.pid %}" 
+           class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Retour à la liste des rapports
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-start">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ resume.title }}</h1>
+                <div class="flex items-center gap-4 text-gray-600">
+                    <span>📅 {{ resume.date_resume|date:"d/m/Y" }}</span>
+                    <span>👤 {{ resume.author }}</span>
+                    {% if resume.destinataire %}
+                    <span>→ {{ resume.destinataire }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                <span class="px-4 py-2 rounded-full text-sm font-medium
+                    {% if resume.status == 'draft' %}bg-gray-200 text-gray-700
+                    {% elif resume.status == 'submitted' %}bg-yellow-200 text-yellow-800
+                    {% elif resume.status == 'validated' %}bg-green-200 text-green-800
+                    {% elif resume.status == 'rejected' %}bg-red-200 text-red-800
+                    {% endif %}">
+                    {{ resume.get_status_display }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenu du rapport -->
+    <div class="bg-white rounded-lg shadow-md p-8 mb-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Contenu du rapport</h2>
+        <div class="prose max-w-none text-gray-700">
+            {{ resume.content|safe }}
+        </div>
+    </div>
+
+    <!-- Actions -->
+    {% if is_author and resume.status == 'draft' %}
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6" x-data="{ showSubmitModal: false }">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Actions</h3>
+        <div class="flex gap-4">
+            <button @click="showEditSlide = true"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                ✏️ Modifier
+            </button>
+            <button @click="showSubmitModal = true"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                📤 Soumettre au supérieur
+            </button>
+        </div>
+
+        <!-- Modal de confirmation -->
+        <div x-show="showSubmitModal" 
+             x-cloak
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             aria-labelledby="modal-title" 
+             role="dialog" 
+             aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <!-- Overlay -->
+                <div x-show="showSubmitModal" 
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" 
+                     @click="showSubmitModal = false"
+                     aria-hidden="true"></div>
+
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <!-- Modal panel -->
+                <div x-show="showSubmitModal"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-green-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+                                <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                <h3 class="text-lg font-medium leading-6 text-gray-900" id="modal-title">
+                                    Soumettre le rapport
+                                </h3>
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-500">
+                                        Êtes-vous sûr de vouloir soumettre ce rapport à votre supérieur hiérarchique ? 
+                                        {% if resume.destinataire %}
+                                        <br><br>
+                                        <strong>Destinataire :</strong> {{ resume.destinataire }}
+                                        {% else %}
+                                        <br><br>
+                                        <span class="text-orange-600">⚠️ Aucun supérieur hiérarchique défini</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <form method="post" action="{% url 'resume:resume_submit' budget_sheet.pid resume.pid %}" class="inline">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                Confirmer
+                            </button>
+                        </form>
+                        <button type="button"
+                                @click="showSubmitModal = false"
+                                class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                            Annuler
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if can_validate and resume.status == 'submitted' %}
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6" x-data="{ showValidateModal: false, showRejectModal: false }">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Validation</h3>
+        <div class="flex gap-4">
+            <button @click="showValidateModal = true"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                ✅ Valider
+            </button>
+            <button @click="showRejectModal = true"
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                ❌ Rejeter
+            </button>
+        </div>
+
+        <!-- Modal de validation -->
+        <div x-show="showValidateModal" 
+             x-cloak
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             role="dialog" 
+             aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div x-show="showValidateModal" 
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" 
+                     @click="showValidateModal = false"></div>
+
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+
+                <div x-show="showValidateModal"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-green-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+                                <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                <h3 class="text-lg font-medium leading-6 text-gray-900">
+                                    Valider le rapport
+                                </h3>
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-500">
+                                        Êtes-vous sûr de vouloir valider ce rapport de <strong>{{ resume.author }}</strong> ?
+                                        <br><br>
+                                        Cette action confirmera que le rapport est approuvé.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <form method="post" action="{% url 'resume:resume_validate' budget_sheet.pid resume.pid %}" class="inline">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                Valider
+                            </button>
+                        </form>
+                        <button type="button"
+                                @click="showValidateModal = false"
+                                class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                            Annuler
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de rejet -->
+        <div x-show="showRejectModal" 
+             x-cloak
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             role="dialog" 
+             aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div x-show="showRejectModal" 
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" 
+                     @click="showRejectModal = false"></div>
+
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+
+                <div x-show="showRejectModal"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+                                <svg class="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                <h3 class="text-lg font-medium leading-6 text-gray-900">
+                                    Rejeter le rapport
+                                </h3>
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-500">
+                                        Êtes-vous sûr de vouloir rejeter ce rapport de <strong>{{ resume.author }}</strong> ?
+                                        <br><br>
+                                        <span class="text-red-600">⚠️ Pensez à ajouter un commentaire pour expliquer le rejet.</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <form method="post" action="{% url 'resume:resume_reject' budget_sheet.pid resume.pid %}" class="inline">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                Rejeter
+                            </button>
+                        </form>
+                        <button type="button"
+                                @click="showRejectModal = false"
+                                class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                            Annuler
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Commentaires -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Commentaires</h3>
+        
+        <!-- Liste des commentaires -->
+        <div class="space-y-4 mb-6" id="comments-list">
+            {% for comment in resume.comments.all %}
+            <div class="border-l-4 border-blue-500 pl-4 py-2">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="font-medium text-gray-900">{{ comment.author }}</span>
+                    <span class="text-sm text-gray-500">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
+                </div>
+                <p class="text-gray-700">{{ comment.content|safe }}</p>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">Aucun commentaire pour le moment</p>
+            {% endfor %}
+        </div>
+
+        <!-- Formulaire d'ajout de commentaire -->
+        <form method="post" action="{% url 'resume:comment_create' budget_sheet.pid resume.pid %}"
+              hx-post="{% url 'resume:comment_create' budget_sheet.pid resume.pid %}"
+              hx-target="#comments-list" hx-swap="beforeend">
+            {% csrf_token %}
+            <div class="mb-4">
+                {{ comment_form.content }}
+            </div>
+            <button type="submit" 
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                💬 Ajouter un commentaire
+            </button>
+        </form>
+    </div>
+
+    <!-- Métadonnées -->
+    <div class="mt-6 bg-gray-50 rounded-lg p-4 text-sm text-gray-600">
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <span class="font-medium">Créé le:</span> {{ resume.created_at|date:"d/m/Y à H:i" }}
+            </div>
+            <div>
+                <span class="font-medium">Modifié le:</span> {{ resume.updated_at|date:"d/m/Y à H:i" }}
+            </div>
+            {% if resume.submitted_at %}
+            <div>
+                <span class="font-medium">Soumis le:</span> {{ resume.submitted_at|date:"d/m/Y à H:i" }}
+            </div>
+            {% endif %}
+            {% if resume.validated_at %}
+            <div>
+                <span class="font-medium">Validé le:</span> {{ resume.validated_at|date:"d/m/Y à H:i" }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Slide-over: Modifier le rapport -->
+    {% if is_author and resume.status == 'draft' %}
+    <div x-show="showEditSlide" 
+         x-cloak
+         class="fixed inset-0 overflow-hidden z-50" 
+         role="dialog" 
+         aria-modal="true">
+        <div class="absolute inset-0 overflow-hidden">
+            <!-- Overlay -->
+            <div x-show="showEditSlide"
+                 x-transition:enter="ease-in-out duration-500"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in-out duration-500"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                 @click="showEditSlide = false"></div>
+
+            <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
+                <div x-show="showEditSlide"
+                     x-transition:enter="transform transition ease-in-out duration-500"
+                     x-transition:enter-start="translate-x-full"
+                     x-transition:enter-end="translate-x-0"
+                     x-transition:leave="transform transition ease-in-out duration-500"
+                     x-transition:leave-start="translate-x-0"
+                     x-transition:leave-end="translate-x-full"
+                     class="w-screen max-w-2xl">
+                    <div class="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+                        <!-- Header -->
+                        <div class="px-4 py-6 bg-blue-600 sm:px-6">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-lg font-medium text-white">
+                                    Modifier le rapport
+                                </h2>
+                                <button @click="showEditSlide = false"
+                                        class="text-white hover:text-gray-200">
+                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="flex-1 px-4 py-6 sm:px-6">
+                            <form method="post" action="{% url 'resume:resume_edit' budget_sheet.pid resume.pid %}">
+                                {% csrf_token %}
+                                
+                                <div class="space-y-6">
+                                    <!-- Titre -->
+                                    <div>
+                                        <label for="id_title_edit" class="block text-sm font-medium text-gray-700">
+                                            Titre
+                                        </label>
+                                        <input type="text" 
+                                               name="title" 
+                                               id="id_title_edit"
+                                               value="{{ resume.title }}"
+                                               required
+                                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    </div>
+
+                                    <!-- Date -->
+                                    <div>
+                                        <label for="id_date_resume_edit" class="block text-sm font-medium text-gray-700">
+                                            Date
+                                        </label>
+                                        <input type="date" 
+                                               name="date_resume" 
+                                               id="id_date_resume_edit"
+                                               value="{{ resume.date_resume|date:'Y-m-d' }}"
+                                               required
+                                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    </div>
+
+                                    <!-- Contenu -->
+                                    <div>
+                                        <label for="id_content_edit" class="block text-sm font-medium text-gray-700">
+                                            Contenu du rapport
+                                        </label>
+                                        <textarea name="content" 
+                                                  id="id_content_edit"
+                                                  rows="10"
+                                                  required
+                                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ckeditor">{{ resume.content }}</textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="mt-6 flex gap-3">
+                                    <button type="submit"
+                                            class="flex-1 bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        Enregistrer
+                                    </button>
+                                    <button type="button"
+                                            @click="showEditSlide = false"
+                                            class="flex-1 bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

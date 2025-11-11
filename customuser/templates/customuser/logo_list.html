@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block navbar_menu %}
+<a href="{% url 'gestionbudget:budget_sheet_list' %}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Gestion Budget</a>
+<a href="{% url 'resume:resume_list' 'default' %}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Résumés</a>
+<a href="{% url 'customuser:logo_list' %}" class="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Gestion Logos</a>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Gestion des Logos</h1>
+            <p class="mt-2 text-gray-600">Gérez les logos affichés dans la navbar de votre application</p>
+        </div>
+
+        <!-- Bouton créer -->
+        <div class="mb-6">
+            <a href="{% url 'customuser:logo_create' %}"
+               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Nouveau Logo
+            </a>
+        </div>
+
+        <!-- Liste des logos -->
+        <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+            {% if logos %}
+            <div class="px-4 py-5 sm:p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for logo in logos %}
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow {% if logo.est_actif %}ring-2 ring-blue-500 bg-blue-50{% endif %}">
+                        <!-- Image du logo -->
+                        <div class="flex justify-center mb-4">
+                            <img src="{{ logo.image.url }}"
+                                 alt="{{ logo.nom }}"
+                                 class="w-16 h-16 object-contain rounded-lg border border-gray-200">
+                        </div>
+
+                        <!-- Informations du logo -->
+                        <div class="text-center">
+                            <h3 class="text-lg font-medium text-gray-900">{{ logo.nom }}</h3>
+                            {% if logo.description %}
+                            <p class="text-sm text-gray-500 mt-1">{{ logo.description }}</p>
+                            {% endif %}
+
+                            <!-- Status -->
+                            <div class="mt-3">
+                                {% if logo.est_actif %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Logo actif
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    Inactif
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="mt-4 flex justify-center space-x-2">
+                                <a href="{% url 'customuser:logo_edit' logo.pk %}"
+                                   class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Modifier
+                                </a>
+                                {% if not logo.est_actif %}
+                                <a href="{% url 'customuser:logo_activate' logo.pk %}"
+                                   class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                    Activer
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'customuser:logo_delete' logo.pk %}"
+                                   class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                    Supprimer
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <!-- Message quand aucun logo -->
+            <div class="px-4 py-12 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun logo</h3>
+                <p class="mt-1 text-sm text-gray-500">Commencez par créer votre premier logo.</p>
+                <div class="mt-6">
+                    <a href="{% url 'customuser:logo_create' %}"
+                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Créer le premier logo
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

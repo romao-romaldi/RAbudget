@@ -1,0 +1,415 @@
+{% extends "lawyer/core/base_dashboard.html" %}
+
+{% block content %}
+    <div class="flex flex-col px-3 md:px-11 py-2 gap-3">
+        <div>
+            <h1 class="font-bold text-2xl">Details Du Contact </h1>
+        </div>
+
+        <div class="md:min-h-72 w-full rounded-lg grid grid-cols-12 py-2">
+            <div class="h-full col-span-full md:col-span-3 border border-gray-600 rounded-md
+            flex flex-col items-center justify-between py-2 px-3">
+                <div class="flex flex-col gap-2 items-center">
+                    <div class="h-20 w-20 bg-gray-300 rounded-full">
+
+                    </div>
+                    <div class="flex flex-col gap-2 items-center">
+                        <span class="text-sm text-gray-500">Titre</span>
+
+                        <strong class="font-semibold ">Nom et Prenom</strong>
+
+                        <span class="text-sm text-gray-500" >example@gmail.com</span>
+                    </div>
+
+                </div>
+
+                <div class="flex gap-2 border rounded-full px-3 py-1 font-medium">
+                    <span class="px-1 py-0.5 rounded-full bg-blue-800">CB</span>
+                    <h6>COUBOU BALOU</h6>
+                </div>
+            </div>
+            <div class="h-full col-span-full md:col-span-9 grid grid-cols-1 md:grid-rows-12 px-4 gap-3
+            max-sm:py-3">
+                
+                <div class="row-span-5  grid md:grid-cols-3 gap-4 ">
+                    <div class="flex border rounded-md items-center px-4 py-1 gap-3">
+                        <div class="h-3/4 w-1/5 bg-orange-200 flex items-center justify-center
+                        rounded-md">
+                            <span class="material-icons md-28 md:md-48 text-orange-500">folder</span>
+                        </div>
+
+                        <div class="flex flex-col gap ">
+                            <span class="text-lg">10</span>
+                            <span class="text-lg font-medium">Dossiers</span>
+                        </div>
+
+                    </div>
+
+                    <div class="flex border rounded-md items-center px-4 py-1 gap-3">
+                        <div class="h-3/4 w-1/5 bg-gray-600 flex items-center justify-center
+                        rounded-md">
+                            <span class="material-icons md-28 md:md-48 text-white">receipt</span>
+                        </div>
+
+                        <div class="flex flex-col gap ">
+                            <span class="text-lg">10</span>
+                            <span class="text-lg font-medium">Facture impayée</span>
+                        </div>
+
+                    </div>
+
+                    <div class="flex border rounded-md items-center px-4 py-1 gap-3">
+                        <div class="h-3/4 w-1/5 bg-blue-200 flex items-center justify-center
+                        rounded-md">
+                            <span class="material-icons md-28 md:md-48 text-blue-800 ">timer</span>
+                        </div>
+
+                        <div class="flex flex-col gap ">
+                            <span class="text-lg">10</span>
+                            <span class="text-lg font-medium">Temps facturable</span>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="row-span-7 w-full border border-green-300 bg-green-100
+                rounded-md 
+                ">  
+                    <div class="flex h-full items-center px-4 gap-4 max-sm:py-3">
+                        <div class="h-20 w-20 bg-green-300 flex items-center justify-center
+                        rounded-md">
+                            <span class="material-icons md-48 text-green-700">receipt</span>
+                        </div>
+    
+                        <div class="flec flex-col gap-4">
+                            <p class="text-2xl font-semibold">1.00.00.00FCFA</p>
+                            <span>Solde de Provision</span>
+                        </div>
+    
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div 
+        x-data="{
+            changeStep:false,
+            tabSelected: 1,
+            tabId: $id('tabs'),
+            tabButtonClicked(tabButton){
+                this.tabSelected = tabButton.id.replace(this.tabId + '-', '');
+                console.log('je suis entrain de verifer le tab', this.tabSelected)
+
+                
+            },
+            tabRepositionMarker(tabButton){
+                this.$refs.tabMarker.style.width=tabButton.offsetWidth + 'px';
+                this.$refs.tabMarker.style.height=tabButton.offsetHeight + 'px';
+                this.$refs.tabMarker.style.left=tabButton.offsetLeft + 'px';
+            },
+            tabContentActive(tabContent){
+                return this.tabSelected == tabContent.id.replace(this.tabId + '-content-', '');
+            }
+        }"
+        
+        x-init="tabRepositionMarker($refs.tabButtons.firstElementChild);"
+
+        class="relative min-h-[512px] shadow-md border border-gray-50 rounded-md
+        grid grid-cols-12 
+        ">
+            <div class="relative h-14 md:h-full col-span-full md:col-span-2 border-e border-gray-300
+            transition-all duration-400 ease-in-out overflow-auto"
+            :class="{'h-48': changeStep === true}">
+                <div x-ref="tabButtons" class="relative h-full max-sm:inline-flex
+                 md:flex md:flex-col md:items-center w-full max-sm:h-10 gap-2 px-1 py-4 text-gray-600 
+                rounded-lg select-none transition-all duration-600 ease-in-out"
+                :class="{'flex flex-col min-h-full':changeStep === true}"
+                >
+                    <button :id="$id(tabId)" @click="tabButtonClicked($el);" type="button" 
+                        class="relative z-20 inline-flex items-center justify-start w-full h-8 px-3
+                        text-sm font-medium transition-all rounded-md cursor-pointer whitespace-nowrap
+                        
+                        "
+                        :class="{'bg-blue-200':parseInt(tabSelected) === 1}"
+                     >Informations Générales</button>
+                    <button :id="$id(tabId)" @click="tabButtonClicked($el);" type="button" 
+                        class="relative z-20 inline-flex items-center justify-start w-full h-8 px-3 
+                        text-sm font-medium transition-all rounded-md cursor-pointer whitespace-nowrap"
+                        :class="{'bg-blue-200':parseInt(tabSelected) === 2}"
+                    >Contacts liés</button>
+                    <button :id="$id(tabId)" @click="tabButtonClicked($el);" type="button" 
+                        class="relative z-20 inline-flex items-center justify-start w-full h-8 px-3 
+                        text-sm font-medium transition-all rounded-md cursor-pointer whitespace-nowrap"
+                        :class="{'bg-blue-200':parseInt(tabSelected) === 3}"
+                    >Activités</button>
+                </div>
+                <button class="absolute top-1 right-1 z-30 md:hidden"
+                @click="changeStep=!changeStep">
+                    <span class="material-icons md-28 bg-gray-50 rounded-md
+                    transition-all duration-300 ease-in-out 
+                    " :class="{'rotate-90':changeStep === true, '-rotate-90':changeStep === false}">chevron_left</span>
+                </button>
+            </div>
+
+            <div class=" h-full col-span-full md:col-span-10">
+                <div class="relative w-full mt-2 content">
+                    <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative" x-cloak>
+                        <!-- Tab Content 1 - Replace with your content -->
+                        <div class="bg-card text-neutral-900 flex flex-col gap-8 px-7">
+                            <div>
+                                <h3 class="font-semibold text-xl">Informations Génerales  </h3>
+                            </div>
+
+                            <div class="flex justify-between">
+                                <div>
+                                    <h6 class="text-lg font-semibold">Addresse</h6>
+                                    <p>3 rue nkassi - pointe noire</p>
+                                </div>
+
+                                <div
+                                    x-data="{ modalOpen: false }"
+                                    @keydown.escape.window="modalOpen = false"
+                                    :class="{ 'z-40': modalOpen }" class="relative w-auto h-auto"
+                                >
+                                    <button class="h-6 w-6 bg-neutral-900 rounded-md relative"
+                                    @click="modalOpen=true">
+                                        <span class="material-icons md-24 z-10
+                                        rounded-lg absolute -right-1 -top-1">edit</span>
+                                        <span class="material-icons md-36 text-white 
+                                        rounded-lg absolute -right-3 -top-3">edit</span>
+                                    </button>
+
+                                    <template x-teleport="body">
+                                        <div x-show="modalOpen" class="fixed top-0 left-0 z-[99] flex items-center justify-center w-screen h-screen" x-cloak>
+                                            <div x-show="modalOpen"
+                                                x-transition:enter="ease-out duration-300"
+                                                x-transition:enter-start="opacity-0"
+                                                x-transition:enter-end="opacity-100"
+                                                x-transition:leave="ease-in duration-300"
+                                                x-transition:leave-start="opacity-100"
+                                                x-transition:leave-end="opacity-0"
+                                                @click="modalOpen=false" class="absolute inset-0 w-full h-full bg-gray-900 bg-opacity-50 backdrop-blur-sm"></div>
+                                            <div x-show="modalOpen"
+                                                x-trap.inert.noscroll="modalOpen"
+                                                x-transition:enter="ease-out duration-300"
+                                                x-transition:enter-start="opacity-0 scale-90"
+                                                x-transition:enter-end="opacity-100 scale-100"
+                                                x-transition:leave="ease-in duration-200"
+                                                x-transition:leave-start="opacity-100 scale-100"
+                                                x-transition:leave-end="opacity-0 scale-90"
+                                                class="relative w-full py-6 bg-white shadow-md px-7 bg-opacity-90 drop-shadow-md backdrop-blur-sm sm:max-w-lg sm:rounded-lg">
+                                                <div class="flex items-center justify-between pb-3">
+                                                    <h3 class="text-lg font-semibold">Modification de l'adresse</h3>
+                                                    <button @click="modalOpen=false" class="absolute top-0 right-0 flex items-center justify-center w-8 h-8 mt-5 mr-5 text-gray-600 rounded-full hover:text-gray-800 hover:bg-gray-50">
+                                                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>  
+                                                    </button>
+                                                </div>
+                                                <div class="relative w-auto pb-8">
+                                                    <form action="" class="flex flex-col gap-4">
+                                                        <div class="w-full">
+                                                            <input type="text" placeholder="adresse"
+                                                            class="rounded-md w-full">
+                                                           
+                                                        </div>
+                                                         <button class="bg-blue-800 hover:bg-blue-600 py-1 px-3 rounded-md text-white
+                                                         w-full">Sauvegarder</button>
+                                                    </form>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col  gap-2 border border-slate-950 w-full
+                            min-h-28 rounded-md
+                            ">
+                                <div class="h-10 flex items-center justify-between w-full py-1 px-3 ">
+                                    <h5 class="font-semibold">Email</h5>
+                                    
+                                    <div 
+                                    x-data="{ modalOpen: false }"
+                                    @keydown.escape.window="modalOpen = false"
+                                    :class="{ 'z-40': modalOpen }"
+                                    class="relative w-auto h-auto">
+                                        <button class="px-3 bg-neutral-900 text-white rounded-md
+                                        text-sm h-7 text-center inline-flex justify-center items-center gap-2"
+                                        @click="modalOpen=true">
+                                            ajouter <span class="text-lg ">+</span>
+                                        </button>
+
+                                        <template x-teleport="body">
+                                            <div x-show="modalOpen" class="fixed top-0 left-0 z-[99] flex items-center justify-center w-screen h-screen" x-cloak>
+                                                <div x-show="modalOpen"
+                                                    x-transition:enter="ease-out duration-300"
+                                                    x-transition:enter-start="opacity-0"
+                                                    x-transition:enter-end="opacity-100"
+                                                    x-transition:leave="ease-in duration-300"
+                                                    x-transition:leave-start="opacity-100"
+                                                    x-transition:leave-end="opacity-0"
+                                                    @click="modalOpen=false" class="absolute inset-0 w-full h-full bg-gray-900 bg-opacity-50 backdrop-blur-sm"></div>
+                                                <div x-show="modalOpen"
+                                                    x-trap.inert.noscroll="modalOpen"
+                                                    x-transition:enter="ease-out duration-300"
+                                                    x-transition:enter-start="opacity-0 scale-90"
+                                                    x-transition:enter-end="opacity-100 scale-100"
+                                                    x-transition:leave="ease-in duration-200"
+                                                    x-transition:leave-start="opacity-100 scale-100"
+                                                    x-transition:leave-end="opacity-0 scale-90"
+                                                    class="relative w-full py-6 bg-white shadow-md px-7 bg-opacity-90 drop-shadow-md backdrop-blur-sm sm:max-w-lg sm:rounded-lg">
+                                                    <div class="flex items-center justify-between pb-3">
+                                                        <h3 class="text-lg font-semibold">Ajouter une adresse email</h3>
+                                                        <button @click="modalOpen=false" class="absolute top-0 right-0 flex items-center justify-center w-8 h-8 mt-5 mr-5 text-gray-600 rounded-full hover:text-gray-800 hover:bg-gray-50">
+                                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>  
+                                                        </button>
+                                                    </div>
+                                                    <div class="relative w-auto pb-8">
+                                                        <form action="" class="flex flex-col gap-4">
+                                                            <div class="w-full">
+                                                                <input type="text" placeholder="Email"
+                                                                class="rounded-md w-full">
+                                                            </div>
+                                                            <button class="bg-blue-800 hover:bg-blue-600 py-1 px-3 rounded-md text-white
+                                                            w-full">Sauvegarder</button>
+                                                        </form>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="grid md:grid-cols-4 px-3">
+                                     <div class="flex gap-2 justify-between border border-neutral-800 py-1 px-1 rounded-md">
+                                        <span class="text-sm pl-1">exemple@gmail.com</span> 
+                                        <button class="material-icons text-red-700">delete</button>
+                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-2 bg-slate-950 w-full
+                            min-h-28 rounded-md
+                            ">
+                            <div class="h-10 flex items-center justify-between w-full py-1 px-3 text-neutral-100">
+                                    <h5 class="font-semibold">Télephone</h5>
+                                    <div
+                                     x-data="{ modalOpen: false }"
+                                    @keydown.escape.window="modalOpen = false"
+                                    :class="{ 'z-40': modalOpen }"
+                                    class="relative w-auto h-auto">
+                                        <button class="px-3 border border-neutral-50 text-white rounded-md
+                                        text-sm h-7 text-center inline-flex justify-center items-center gap-2"
+                                        @click="modalOpen=true">
+                                            ajouter <span class="text-lg ">+</span>
+                                        </button>
+
+                                        <template x-teleport="body">
+                                            <div x-show="modalOpen" class="fixed top-0 left-0 z-[99] flex items-center justify-center w-screen h-screen" x-cloak>
+                                                <div x-show="modalOpen"
+                                                    x-transition:enter="ease-out duration-300"
+                                                    x-transition:enter-start="opacity-0"
+                                                    x-transition:enter-end="opacity-100"
+                                                    x-transition:leave="ease-in duration-300"
+                                                    x-transition:leave-start="opacity-100"
+                                                    x-transition:leave-end="opacity-0"
+                                                    @click="modalOpen=false" class="absolute inset-0 w-full h-full bg-gray-900 bg-opacity-50 backdrop-blur-sm"></div>
+                                                <div x-show="modalOpen"
+                                                    x-trap.inert.noscroll="modalOpen"
+                                                    x-transition:enter="ease-out duration-300"
+                                                    x-transition:enter-start="opacity-0 scale-90"
+                                                    x-transition:enter-end="opacity-100 scale-100"
+                                                    x-transition:leave="ease-in duration-200"
+                                                    x-transition:leave-start="opacity-100 scale-100"
+                                                    x-transition:leave-end="opacity-0 scale-90"
+                                                    class="relative w-full py-6 bg-white shadow-md px-7 bg-opacity-90 drop-shadow-md backdrop-blur-sm sm:max-w-lg sm:rounded-lg">
+                                                    <div class="flex items-center justify-between pb-3">
+                                                        <h3 class="text-lg font-semibold">Ajouter un numero de téléphone</h3>
+                                                        <button @click="modalOpen=false" class="absolute top-0 right-0 flex items-center justify-center w-8 h-8 mt-5 mr-5 text-gray-600 rounded-full hover:text-gray-800 hover:bg-gray-50">
+                                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>  
+                                                        </button>
+                                                    </div>
+                                                    <div class="relative w-auto pb-8">
+                                                        <form action="" class="flex flex-col gap-4">
+                                                            <div class="w-full">
+                                                                <input type="text" placeholder="Email"
+                                                                class="rounded-md w-full">
+                                                            </div>
+                                                            <button class="bg-blue-800 hover:bg-blue-600 py-1 px-3 rounded-md text-white
+                                                            w-full">Sauvegarder</button>
+                                                        </form>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="grid md:grid-cols-4 px-3">
+                                     <div class="flex gap-2 justify-between border py-1 px-1 rounded-md">
+                                        <span class="text-sm pl-1 text-neutral-100">exemple@gmail.com</span> 
+                                        <button class="material-icons text-red-700">delete</button>
+                                     </div>
+                                </div>
+
+                            </div>
+
+                             <div class="flex flex-col  gap-2 border border-slate-950 w-full
+                            min-h-28 rounded-md
+                            ">
+                                <div class="h-10 flex items-center justify-between w-full py-1 px-3 ">
+                                    <h5 class="font-semibold">Contacts liés</h5>
+
+                                    <button class="px-3 bg-neutral-900 text-white rounded-md
+                                    text-sm h-7 text-center inline-flex justify-center items-center gap-2">
+                                        ajouter <span class="text-lg ">+</span>
+                                    </button>
+                                </div>
+                                <div class="grid md:grid-cols-4 px-3">
+                                     <div class="flex gap-2 justify-between border border-neutral-800 py-1 px-2 rounded-md">
+                                        <div>
+                                            <h6 class="text-sm">Nom du contact </h6>
+                                            <span class="text-sm text-gray-400">my role</span>
+                                        </div>
+                                        <div>
+                                            <button class="material-icons ">more_horiz</button>
+                                        </div>
+                                     </div>
+                                </div>
+                            </div>
+
+                             <div class="flex flex-col  gap-2 border border-slate-950 w-full
+                            min-h-28 rounded-md
+                            ">
+                                <div class="h-10 flex items-center justify-between w-full py-1 px-3 ">
+                                    <h5 class="font-semibold">Contacts liés</h5>
+
+                                    <button class="px-3 bg-neutral-900 text-white rounded-md
+                                    text-sm h-7 text-center inline-flex justify-center items-center gap-2">
+                                        ajouter <span class="text-lg ">+</span>
+                                    </button>
+                                </div>
+                                <div class="grid md:grid-cols-4 px-3">
+                                     <div class="flex gap-2 justify-between border border-neutral-800 py-1 px-2 rounded-md">
+                                        <div>
+                                            <h6 class="text-sm">Nom du contact </h6>
+                                            <span class="text-sm text-gray-400">my role</span>
+                                        </div>
+                                        <div>
+                                            <button class="material-icons ">more_horiz</button>
+                                        </div>
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Tab Content 1 -->
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+{% endblock content %}

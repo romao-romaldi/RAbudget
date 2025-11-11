@@ -1,0 +1,405 @@
+{% extends "gestionbuget/base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8"
+     x-data="{ showCreateSlide: false, showInviteSlide: false }"
+     @closecreateslide.window="showCreateSlide = false; console.log('Slide-over création fermé via HTMX')"
+     @closeinviteslide.window="showInviteSlide = false; console.log('Slide-over invitation fermé via HTMX')">
+    <!-- Retour -->
+    <div class="mb-4">
+        <a href="{% url 'gestionbudget:budget_sheet_detail' budget_sheet.pid %}" 
+           class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Retour à la feuille de budget
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Gestion des utilisateurs</h1>
+        <p class="text-gray-600">{{ budget_sheet.title }}</p>
+    </div>
+
+    <!-- Messages personnalisés -->
+    {% if success_message %}
+    <div class="mb-6 p-4 rounded-lg bg-green-100 border-l-4 border-green-500 text-green-800 flex items-center gap-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>{{ success_message }}</span>
+    </div>
+    {% endif %}
+    
+    {% if error_message %}
+    <div class="mb-6 p-4 rounded-lg bg-red-100 border-l-4 border-red-500 text-red-800 flex items-center gap-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>{{ error_message }}</span>
+    </div>
+    {% endif %}
+    <!-- Bouton pour créer un utilisateur -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Créer un nouvel utilisateur
+            </h2>
+            <button @click="showCreateSlide = true" 
+                    class="flex items-center gap-2 px-4 py-2 border-2 border-indigo-600 text-indigo-600 bg-white rounded-lg hover:bg-indigo-50 transition text-sm font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Nouveau utilisateur
+            </button>
+        </div>
+
+
+        <!-- Slide-over pour créer un utilisateur -->
+        <div x-show="showCreateSlide"
+             x-cloak
+             class="fixed inset-0 overflow-hidden z-50"
+             >
+            <div class="absolute inset-0 overflow-hidden">
+                <!-- Overlay -->
+                <div x-show="showCreateSlide"
+                     x-transition:enter="ease-in-out duration-500"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="ease-in-out duration-500"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     @click="showCreateSlide = false"
+                     class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                     aria-hidden="true"></div>
+
+                <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
+                    <div x-show="showCreateSlide"
+                         x-transition:enter="transform transition ease-in-out duration-500"
+                         x-transition:enter-start="translate-x-full"
+                         x-transition:enter-end="translate-x-0"
+                         x-transition:leave="transform transition ease-in-out duration-500"
+                         x-transition:leave-start="translate-x-0"
+                         x-transition:leave-end="translate-x-full"
+                         class="w-screen max-w-md">
+                        <div class="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+                            <!-- Header -->
+                            <div class="px-4 py-6  sm:px-6">
+                                <div class="flex items-center justify-between">
+                                    <h2 class="text-2xl font-semibold text-gray-600">
+                                        Créer un utilisateur
+                                    </h2>
+                                    <button @click="showCreateSlide = false"
+                                            class="text-indigo-600 text-xl font-bold hover:text-gray-200 transition">
+                                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Content -->
+                            <div class="flex-1 px-4 py-6 sm:px-6"
+                                x-data="{
+                                    username : '',
+                                    email : '',
+                                    first_name : '',
+                                    last_name : '',
+                                    password : '',
+                                    role : '',
+                                }"
+                            >
+                                <div id="user-messages"></div>
+
+                                <form id="create-user-form"
+                                hx-post="{% url 'gestionbudget:create_user_htmx' budget_sheet.pid %}"
+                                hx-target="#partners-section" hx-swap="innerHTML"
+                                @htmx:after-request="if(event.detail.successful) { showCreateSlide = false; document.getElementById('create-user-form').reset(); }" 
+                                class="space-y-4">
+                                    {% csrf_token %}
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Nom d'utilisateur <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" name="username" required x-model="username"
+                                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                               placeholder="johndoe">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Email <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="email" name="email" required x-model="email"
+                                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                               placeholder="john@example.com">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Prénom
+                                        </label>
+                                        <input type="text" name="first_name" x-model="first_name"
+                                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                               placeholder="John">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Nom
+                                        </label>
+                                        <input type="text" name="last_name" x-model="last_name"
+                                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                               placeholder="Doe">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Mot de passe <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="password" name="password" required x-model="password"
+                                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                               placeholder="••••••••">
+                                        <p class="mt-1 text-xs text-gray-500">L'utilisateur pourra changer son mot de passe après la première connexion</p>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Rôle <span class="text-red-500">*</span>
+                                        </label>
+                                        <select name="role" required
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                                {% for role in role %}
+                                                <option value="{{ role.0 }}">{{ role.1 }}</option>
+                                                {% endfor %}
+                                        </select>
+                                        <p class="mt-1 text-xs text-gray-500">Le rôle détermine les permissions de l'utilisateur</p>
+                                    </div>
+
+                                    <!-- Footer buttons -->
+                                    <div class="flex gap-3 pt-6 border-t">
+                                        <button type="button" @click="showCreateSlide = false"
+                                                class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                                            Annuler
+                                        </button>
+                                        <button type="submit"
+                                            class="flex-1 px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition font-medium">
+                                            Créer
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8">
+        <!-- Propriétaire -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+                Propriétaire
+            </h2>
+
+            <div class="border-2 border-purple-200 rounded-lg p-4 bg-purple-50">
+                <div class="flex items-center gap-3">
+                    <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-2xl">
+                        {{ budget_sheet.user.user.username|slice:":1"|upper }}
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-900 text-lg">{{ budget_sheet.user }}</p>
+                        <p class="text-sm text-gray-600">{{ budget_sheet.user.user.email }}</p>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-600 text-white mt-2">
+                            Propriétaire
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Partenaires actuels -->
+        <div id="partners-section" class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Partenaires ({{ partenaires.count }})
+            </h2>
+
+            {% if partenaires %}
+            <div class="space-y-3">
+                {% for partenaire in partenaires %}
+                <div class="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3 flex-1">
+                            <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                                {{ partenaire.user.user.username|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900">{{ partenaire.user }}</p>
+                                <p class="text-sm text-gray-600">{{ partenaire.user.user.email }}</p>
+                            </div>
+                        </div>
+                        <form method="post" class="inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="remove">
+                            <input type="hidden" name="user_id" value="{{ partenaire.user.id }}">
+                            <button type="submit"
+                                    onclick="return confirm('Êtes-vous sûr de vouloir retirer ce partenaire ?')"
+                                    class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm">
+                                Retirer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <p>Aucun partenaire pour le moment</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    
+
+    <!-- Ajouter un partenaire -->
+    <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+    </div>
+
+    <!-- Section des invitations en attente -->
+    <div id="invitations-section" class="bg-white rounded-lg shadow-md p-6 mt-8">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Inviter un partenaire
+            </h2>
+            <button @click="showInviteSlide = true" 
+                    class="flex items-center gap-2 px-4 py-2 border-2 border-green-600 text-green-600 bg-white rounded-lg hover:bg-green-50 transition text-sm font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Envoyer une invitation
+            </button>
+        </div>
+        
+        <div class="text-center py-8 text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <p>{% if pending_invitations %}Invitations en attente : {{ pending_invitations.count }}{% else %}Cliquez sur "Envoyer une invitation" pour inviter un utilisateur existant{% endif %}</p>
+        </div>
+    </div>
+
+    <!-- Slide-over pour inviter un partenaire -->
+    <div x-show="showInviteSlide" 
+         x-cloak
+         class="fixed inset-0 overflow-hidden z-50" 
+         >
+        <div class="absolute inset-0 overflow-hidden">
+            <!-- Overlay -->
+            <div x-show="showInviteSlide"
+                 x-transition:enter="ease-in-out duration-500"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in-out duration-500"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @click="showInviteSlide = false"
+                 class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                 aria-hidden="true"></div>
+
+            <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
+                <div x-show="showInviteSlide"
+                     x-transition:enter="transform transition ease-in-out duration-500"
+                     x-transition:enter-start="translate-x-full"
+                     x-transition:enter-end="translate-x-0"
+                     x-transition:leave="transform transition ease-in-out duration-500"
+                     x-transition:leave-start="translate-x-0"
+                     x-transition:leave-end="translate-x-full"
+                     class="w-screen max-w-md">
+                    <div class="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+                        <!-- Header -->
+                        <div class="px-4 py-6 bg-green-600 sm:px-6">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-lg font-medium text-white">
+                                    Inviter un partenaire
+                                </h2>
+                                <button @click="showInviteSlide = false"
+                                        class="text-white hover:text-gray-200 transition">
+                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="flex-1 px-4 py-6 sm:px-6">
+                            <div id="invitation-messages"></div>
+                            <form hx-post="{% url 'gestionbudget:send_invitation_htmx' budget_sheet.pid %}"
+                                  hx-target="#invitations-section"
+                                  hx-swap="innerHTML"
+                                  hx-on::after-request="if(event.detail.successful) { showInviteSlide = false; document.querySelector('form').reset(); }"
+                                  class="space-y-4">
+                                {% csrf_token %}
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Email ou nom d'utilisateur <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" name="email_or_username" required
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                           placeholder="john@example.com ou johndoe">
+                                    <p class="mt-1 text-xs text-gray-500">L'utilisateur doit déjà avoir un compte dans le système</p>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Rôle <span class="text-red-500">*</span>
+                                    </label>
+                                    <select name="role" required
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                        <option value="consultation">Consultation</option>
+                                        <option value="gestionnaire">Gestionnaire</option>
+                                        <option value="gerant">Gérant</option>
+                                        <option value="superadmin">Super Admin</option>
+                                    </select>
+                                    <p class="mt-1 text-xs text-gray-500">Le rôle détermine les permissions de l'utilisateur</p>
+                                </div>
+
+                                <!-- Footer buttons -->
+                                <div class="flex gap-3 pt-6 border-t">
+                                    <button type="button" @click="showInviteSlide = false"
+                                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                                        Annuler
+                                    </button>
+                                    <button type="submit"
+                                            class="flex-1 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
+                                        Envoyer l'invitation
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

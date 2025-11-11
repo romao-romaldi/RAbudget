@@ -1,0 +1,85 @@
+<div x-data x-init="defInit( {{initialChamps}} )" class="h-full" id="liste_activiter">
+    <form hx-post="{% url 'lawyer:add_type_activiter' %}" hx-target="#liste_activiter" hx-trigger="submit" hx-swap="outerHTML"
+        hx-oob class="space-y-6">
+        {% csrf_token %}
+        <div>
+            <label for="nom_activiter" class="block text-sm font-medium text-gray-700">Nom de l'activité</label>
+            <div class="mt-1">
+                <input type="text" name="name" id="nom_activiter" required
+                autocomplete="given-name" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none
+                    focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+            </div>
+        </div>
+    
+        <div class="space-y-6">
+            <div>
+            <h3 class="text-lg font-semibold ">Selectionner les champs</h3>
+            <span class="text-sm text-gray-500">ajouter les champs qui seront affichés dans le formulaire</span>
+            </div>
+    
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+                {% if error %}
+                  <p class="text-red-500">{{ error }}</p>
+                {% endif %}
+                {% for champ in champs %}
+                    <div class="flex justify-between items-center gap-2 px-4 py-2 border rounded-md ">
+                        <div>
+                            <p>{{ champ.name }}</p>
+                            <span class="text-sm text-gray-500">{{ champ.description }}</span>
+                        </div>
+    
+                        <div class="flex items-center gap-2">
+                            <div x-data="{ switchOn: active_champs({{ champ.id }}) }" class="flex items-center justify-center space-x-2">
+                                <label @click="$refs.switchButton.click(); $refs.switchButton.focus()" :id="$id('switch')"
+                                    :class="{ 'text-blue-600': switchOn, 'text-gray-400': ! switchOn }"
+                                    class="text-sm select-none"
+                                    x-cloak>
+                                    status
+                                </label>
+                                <button
+                                    x-ref="switchButton"
+                                    type="button"
+                                    @click="switchOn = ! switchOn; switchOn ? addChamp({{ champ.id }}) : removeChamp({{ champ.id }})"
+                                    :class="switchOn ? 'bg-blue-600' : 'bg-neutral-200'"
+                                    class="relative inline-flex h-6 py-0.5 ml-4 focus:outline-none rounded-full w-10"
+                                    x-cloak>
+                                    <span :class="switchOn ? 'translate-x-[18px]' : 'translate-x-0.5'" class="w-5 h-5 duration-200 ease-in-out
+                                        bg-white rounded-full shadow-md"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <input type="text" name="champs" :value="getchamps" hidden>
+        <div class="pt-5">
+            <div class="flex justify-between items-center">
+                <button type="button" @click="slideOverOpen=false" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700
+                    hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Cancel</button>
+                    <span x-text="getchamps"></span>
+                <button type="submit" class="ml-3 inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm 
+                font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                    focus:ring-blue-500">Sauvegarder</button>
+            </div>  
+        </div>
+    </form>
+</div>
+
+{% if type_activity %}
+  <div x-ref="tabButtons" class="relative flex items-center justify-center w-full h-10   p-1 text-gray-500 bg-white border 
+    border-gray-100 rounded-lg select-none" id="Tabsheaders" hx-swap-oob="beforeend">
+     
+    <button :id="$id(tabId)" @click="tabButtonClicked($el);" type="button" :class="{ 'bg-gray-100 text-gray-700' : tabButtonActive($el) }" 
+    class="relative z-20 inline-flex items-center justify-center w-full h-8 px-3 text-sm font-medium transition-all rounded-md
+    cursor-pointer whitespace-nowrap">{{ type_activity.name }}</button>
+  </div>
+
+  <div class="relative flex items-center justify-center w-full p-5 mt-2 text-xs text-gray-400 border rounded-md 
+    content border-gray-200/70" id="Tabsbody" hx-swap-oob="beforeend">
+    <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative">
+        This is the content shown for {{ type_activity.name }}
+    </div>
+  </div>
+      
+{% endif %}

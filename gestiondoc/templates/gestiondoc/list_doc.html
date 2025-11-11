@@ -1,0 +1,152 @@
+{% extends "lawyer/core/base_dashboard.html" %}
+
+
+{% block content %}
+
+
+    <div x-data="{ 
+            slideOverOpen: false ,
+            typeAdd: 'file'
+                }" 
+        class="relative z-50 w-auto h-auto">
+        <div 
+
+        class="w-[700px] mx-auto p-6 bg-white rounded-lg shadow-md">
+            <h1 class="text-2xl font-bold mb-4">Liste des documents</h1>
+            <div class="mb-4 justify-end flex gap-4">
+                <button @click="slideOverOpen=true, typeAdd='sous_doc'"
+                 class=" text-neutral-800 hover:bg-neutral-700 hover:text-white px-4 py-2 rounded border border-gray-400
+                transition ease-in-out  duration-500">Ajouter un sous dossiers</button>
+
+                <button  @click="slideOverOpen=true, typeAdd='file'"
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" >Ajouter un document</button>
+            </div>
+            <div class="space-y-4 pt-6">
+                {% if document %}
+                    <div x-data="{ 
+                            activeAccordion: '', 
+                            setActiveAccordion(id) { 
+                                this.activeAccordion = (this.activeAccordion == id) ? '' : id 
+                            } 
+                        }" class="relative w-full mx-auto overflow-hidden text-sm font-normal
+                         bg-white border border-gray-200 divide-y divide-gray-200 rounded-md"
+                         
+                         id="list_sous_documents"
+                         >
+
+                        {% for sous_document in sous_documents %}
+                            <div x-data="{ id: $id('accordion') }" class="cursor-pointer group">
+                                <button @click="setActiveAccordion(id)" class="flex items-center justify-between w-full p-4 text-left select-none group-hover:underline">
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex items-center">
+                                            <span class="material-icons md-28 text-orange-300">folder</span>
+                                        </div>
+                                        <div>
+                                            <h2 class="text-lg font-semibold">{{sous_document.title}}</h2>
+                                            <p class="text-sm text-gray-600">Ajouté le {{ sous_document.created_at|date:"d M Y" }}</p>
+                                        </div>
+                                    </div>
+                                    <svg class="w-4 h-4 duration-200 ease-out" :class="{ 'rotate-180': activeAccordion==id }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </button>
+                                <div x-show="activeAccordion==id" x-collapse x-cloak>
+                                    <div class="p-4 pt-0 opacity-70 space-y-2" id="sous_doc_{{ sous_document.id }}"
+                                         >
+                                        {% if not sous_document.files_sous_doc.all %}
+                                            <p class="text-gray-600">Aucun document dans ce sous dossier.</p>
+                                        {% endif %}
+                                        {% for file_doc in sous_document.files_sous_doc.all %}
+                                            <li class="p-4 border border-gray-300 rounded-lg flex justify-between items-center">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="flex items-center">
+                                                        <span class="material-icons md-28">description</span>
+                                                    </div>
+                                                    <div>
+                                                        <h2 class="text-lg font-semibold">{{file_doc.name}}</h2>
+                                                        <p class="text-sm text-gray-600">Ajouté le {{ file_doc.created_at|date:"d M Y" }}</p>
+                                                    </div>
+                                                </div>
+                                                <a href="{{ file_doc.file.url }}" target="_blank" class="text-blue-500 hover:underline">Voir le document</a>
+                                            </li>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="space-y-2" id="documents_files_list">
+                        {% for document_file in documents_files %}
+                            <li class="p-4 border border-gray-300 rounded-lg flex justify-between items-center">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex items-center">
+                                        <span class="material-icons md-28">description</span>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-lg font-semibold">{{ document_file.name }}</h2>
+                                        <p class="text-sm text-gray-600">Ajouté le {{ document_file.created_at|date:"d M Y" }}</p>
+                                    </div>
+                                </div>
+                                <a href="{{ document_file.file.url }}" target="_blank" class="text-blue-500 hover:underline">Voir le document</a>
+                            </li>
+                        {% endfor %}
+                        
+                    </div>
+                {% else %}
+                    <p class="text-gray-600">Aucun document disponible.</p>
+
+                {% endif %}
+            </div>
+
+            <template x-teleport="body">
+                <div 
+                    x-show="slideOverOpen"
+                    @keydown.window.escape="slideOverOpen=false"
+                    class="relative z-[99]">
+                    <div x-show="slideOverOpen" x-transition.opacity.duration.600ms @click="slideOverOpen = false" class="fixed inset-0 bg-black/10"></div>
+                    <div class="overflow-hidden fixed inset-0">
+                        <div class="overflow-hidden absolute inset-0">
+                            <!-- Remove the pt-11 from the element below, this was needed only for the demo -->
+                            <div class="flex fixed inset-y-0 right-0 pt-11 pl-10 max-w-full">
+                                <div 
+                                    x-show="slideOverOpen" 
+                                    @click.away="slideOverOpen = false"
+                                    x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" 
+                                    x-transition:enter-start="translate-x-full" 
+                                    x-transition:enter-end="translate-x-0" 
+                                    x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" 
+                                    x-transition:leave-start="translate-x-0" 
+                                    x-transition:leave-end="translate-x-full" 
+                                    class="w-screen max-w-md">
+                                    <div class="flex overflow-y-scroll flex-col py-5 h-full bg-white border-l shadow-lg border-neutral-100/70">
+                                        <div class="px-4 sm:px-5">
+                                            <div class="flex justify-between items-start pb-1">
+                                                <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">Slide Over Title</h2>
+                                                <div class="flex items-center ml-3 h-auto"> 
+                                                    <button @click="slideOverOpen=false" class="flex absolute right-0 z-30 justify-center items-center px-3 py-2 mt-6 mr-5 space-x-1 text-xs font-medium uppercase rounded-md border border-neutral-200 text-neutral-600 hover:bg-neutral-100">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                        <span>Close</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="relative flex-1 px-4 mt-5 sm:px-5">
+                                            <div x-show="typeAdd=='sous_doc'">
+                                                {% include "gestiondoc/htmx/add_sousdoc.html" %}
+                                            </div>
+                                            <div x-show="typeAdd=='file'">
+                                                {% include "gestiondoc/htmx/adddoc.html" %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+
+    </div>
+{% endblock %}

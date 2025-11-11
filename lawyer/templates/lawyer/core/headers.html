@@ -1,0 +1,38 @@
+{% load static %}
+
+<div class="w-full h-20 border-b py-2 px-3 flex items-center justify-between 
+sticky top-0 bg-white">
+
+    <div>
+        <button class="flex gap-1 items-center hover:border rounded-md px-2 py-1">
+            <div class="relative ">
+                <img src="{% static 'img/icon/search.svg' %}" alt="icon contact personnes"
+                class="object-cover">
+            </div>
+            <span>Recherche</span>
+        </button>
+    </div>
+
+    <div class="flex justify-center items-center gap-4">
+        <div class="h-10 w-10 rounded-full  flex items-center justify-center
+        hover:scale-110 transition-transform ease-linear cursor-pointer
+        ">
+            <div class="relative flex items-center">
+                <span class="material-icons md-24">notifications</span>
+            </div>
+        </div>
+        <div class="h-10 w-10 rounded-full flex items-center justify-center
+        hover:scale-110 transition-transform ease-linear cursor-pointer
+        ">
+            <div class="relative flex items-center">
+                <span class="material-icons md-24">help</span>
+            </div>
+        </div>
+        <div class="h-10 w-10 rounded-full bg-blue-800 flex items-center justify-center
+        hover:scale-110 transition-transform ease-linear cursor-pointer
+        ">
+            <span class=" text-white font-semibold">LG</span>
+        </div>
+    </div>
+
+</div>

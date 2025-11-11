@@ -1,0 +1,146 @@
+<div class="py-4 flex flex-col gap-6" id="istodos">
+    <div>
+        <h3 class="font-bold">CREATION D'UNE NOUVELLE TACHE</h3>
+    </div>
+    
+    <form class="flex flex-col gap-4"
+     hx-post="{% url 'todo:todo_create' %}"
+     hx-target="#istodos"
+     hx-trigger="submit"
+     hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+    
+    >
+        <div>
+            <!-- <label for="taskName" class="block text-sm font-medium text-gray-700">Nom de la Tâche</label> -->
+            <input type="text" id="id_title" name="title" 
+            required class="mt-1 block w-full border-0 border-gray-300 rounded-md shadow-sm focus:border-indigo-500
+                focus:ring-indigo-500 font-bold text-xl sm:text-sm"
+                placeholder="Entrez le nom de la tâche ici..." />
+        </div>
+        <div class="mt-4">
+            <!-- <label for="taskDescription" class="block text-sm font-medium text-gray-700">Description</label> -->
+            <textarea id="id_description" name="description" rows="8" 
+             class="mt-1 block w-full border-0 border-gray-300 rounded-md shadow-sm focus:border-indigo-500
+                focus:ring-indigo-500 sm:text-sm "
+                placeholder="Entrez la description de la tâche ici..."
+                ></textarea>
+        </div>
+        <div>
+            <div class="flex flex-col">
+                <label for="">date realisation et heure (facultatif)</label>
+                <input type="datetime-local" />
+            </div>
+    
+        </div>
+    
+        <div class="mt-4">
+            <label for="taskPriority" class="block text-lg font-bold text-gray-600">Priorité</label>
+            <div class="mt-2">
+                <div x-data="{
+                    radioGroupSelectedValue: null,
+                    radioGroupOptions: [
+                        {
+                            title: 'Basse',
+                            value: 'low'
+                        },
+                        {
+                            title: 'Moyenne',
+                            value: 'medium'
+                        },
+                        {
+                            title: 'Haute',
+                            value: 'high'
+                        }
+                    ]
+                }" class="space-y-3 flex justify-between">
+                    <template x-for="(option, index) in radioGroupOptions" :key="index">
+                        <label @click="radioGroupSelectedValue=option.value" class="flex items-start p-2 text-xs
+                        space-x-3 bg-white border rounded-md shadow-sm hover:bg-gray-50 border-neutral-200/70">
+                            <input type="radio" name="radio-group" :value="option.value"
+                                class="text-gray-900 translate-y-px focus:ring-gray-700" />
+                            <span class="relative flex flex-col text-left space-y-1.5 leading-none">
+                                <span x-text="option.title" class="font-semibold"></span>
+                            </span>
+                        </label>
+                    </template>
+                </div>
+            </div>
+        </div>
+    
+        <div>
+            <label for="responsable" class="block text-lg font-bold text-gray-600">Responsables</label>
+            <div x-data="{ responsables: [] }" class="flex gap-2 overflow-y-scroll">
+                <!-- Ajoute d'autres responsables si besoin -->
+                {% for use in users  %}
+                    <label 
+                        for="responsable{{use.id}}"
+                        :class="responsables.includes('{{use.id}}') ? 'border-cyan-500 bg-cyan-50' : 'border bg-white'"
+                        class="flex items-center space-x-2 rounded-lg px-2 py-1 cursor-pointer transition-colors duration-200 mt-2
+                        {% if user.profile.id == use.id %}
+                          border-cyan-500 bg-cyan-50
+                        {% endif %}
+                        "
+                    >
+                        <span class="h-10 w-10 rounded-full border bg-zinc-200 flex items-center justify-center overflow-hidden">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Utilisateur" class="h-10 w-10 rounded-full object-cover" />
+                        </span>
+                        <span class="text-sm">
+                            {% if use.last_name or use.first_name  %}
+                                {{use.last_name}} {{use.first_name}}
+                            {% else %}
+                                {{use.user.username}}
+                            {% endif %}
+                        </span>
+                        <input 
+                            type="checkbox" 
+                            id="responsable{{use.id}}"
+                            name="responsable" 
+                            value="{{use.id}}"
+                            class="hidden"
+                            x-model="responsables"
+                        />
+                    </label>
+                    
+                {% endfor %}
+                <input hidden name="isResponsible" type="text"  :value="responsables" />
+            </div>
+        </div>
+    
+        <div>
+            <label for="responsable" class="block text-lg font-bold text-gray-600">Validateurs</label>
+            <div x-data="{ validateurs: [] }" class="flex gap-2 overflow-y-scroll">
+                <!-- Ajoute d'autres responsables si besoin -->
+                {% for use in users  %}
+                <label 
+                    for="validateur{{use.id}}"
+                    :class="validateurs.includes('{{use.id}}') ? 'border-cyan-500 bg-cyan-50' : 'border bg-white'"
+                    class="flex items-center space-x-2 rounded-lg px-2 py-1 cursor-pointer transition-colors duration-200 mt-2"
+                >
+                    <span class="h-10 w-10 rounded-full border bg-zinc-200 flex items-center justify-center overflow-hidden">
+                        <img src="https://randomuser.me/api/portraits/men/52.jpg" alt="Utilisateur {{use.id}}" class="h-10 w-10 rounded-full object-cover" />
+                    </span>
+                    <span class="text-sm">
+                        {% if use.last_name or use.first_name  %}
+                            {{use.last_name}} {{use.first_name}}
+                        {% else %}
+                            {{use.user.username}}
+                        {% endif %}
+                    </span>
+                    <input
+                        type="checkbox"
+                        id="validateur{{use.id}}"
+                        name="validateur"
+                        value="{{use.id}}"
+                        class="hidden"
+                        x-model="validateurs"
+                    />
+                </label>
+                {% endfor %}
+                <input hidden name="validators" type="text"  :value="validateurs" />
+            </div>
+        </div>
+    
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-sm">Creer</button>
+    </form>
+</div>
+

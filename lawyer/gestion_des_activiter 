@@ -1,0 +1,26 @@
+dans cette partie il faut gerer la partie paramtrage des activiter
+
+
+* ma logique de fonctionnement :
+
+    creer une table qui liste toutes les champs d'une activiter
+
+    Q:comment aller vous proceder des champs ?
+
+    Q: comment allez vous faire pour les types de champs ?
+    R: je vais creer une table qui liste les types de champs (text, number, date, etc), en suite
+     creer une table qui type activiter qui liste toute les champs qui etes present par rapport au besoin de ce type de
+    type_activiter et une table qui liste les champs d'une activiter avec une relation vers la table des types de champs.
+
+    Q: Cette facon de faire ne va pas alourdir la base de donnee et ralitantir les appels de relations sur les filtre
+     django ?
+
+    R:  oui je pense que oui, mais c'est la facon la plus souple de gerer les activiter
+     et les champs qui les composent, car on peut ajouter des champs a une activiter sans toucher au code.
+
+
+    * definisons la structure de la base de donnee :
+    1. table champ : id, nom, description, statut (actif/inactif)
+    2. table type_activiter : id, nom, description, ralation vers champ (plusieurs champs avec les table champ)
+    3. table activiter : id, nom, description,
+    relation vers type_activiter, relation vers champ (plusieurs champs avec les table champ)

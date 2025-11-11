@@ -1,0 +1,198 @@
+{% extends "lawyer/core/base_dashboard.html" %}
+
+{% block content %}
+<div x-data="{ 
+        slideOverOpen: false 
+    }"  class="relative z-50 lg:w-[1350px] h-auto mx-auto">
+    <div class="flex justify-between items-center px-4 py-5 " style="margin-bottom: 36px;">
+        <h3 class="font-extrabold " style="font-size: 24px;">Mes Tâches</h3>
+
+        <div class="flex items-center gap-6">
+            <form method="get" class="flex items-center gap-2">
+                <select name="status" id="status-filter" class="border rounded-lg px-4 py-2 mr-4"
+                        onchange="this.form.submit()">
+                    <option value="">Toutes les tâches</option>
+                    <option value="pending" {% if current_filter == 'pending' %}selected{% endif %}>Tâches en attente</option>
+                    <option value="in_progress" {% if current_filter == 'in_progress' %}selected{% endif %}>Tâches en cours</option>
+                    <option value="completed" {% if current_filter == 'completed' %}selected{% endif %}>Tâches terminées</option>
+                    <option value="archived" {% if current_filter == 'archived' %}selected{% endif %}>Tâches archivées</option>
+                </select>
+            <button  @click="slideOverOpen=true"  class=" px-4 py-2 rounded-lg bg-cyan-100 border  ">
+                <span>+</span> Tâche
+            </button>
+        </div>
+    </div>
+    <div class="">
+        <div class="mb-4">
+            <p class="text-sm text-gray-600">
+                {% if current_filter %}
+                    {{ todos.count }} tâche{{ todos.count|pluralize }} avec le statut "{{ current_filter }}"
+                {% else %}
+                    {{ todos.count }} tâche{{ todos.count|pluralize }} au total
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="grid grid-cols-5 gap-2 py-5 px-4 items-center text-zinc-400 ">
+            <h3 class="font-bold text-xl">NOM</h3>
+            <p class="font-bold col-span-2">DESCRIPTION</p>
+            <div class="font-bold flex gap-2 flex-grow-1">
+                RESPONSABLES
+            </div>
+
+            <div class="flex items-center justify-between font-bold">
+                <span>DATE DE CREATION</span>
+                <span class="rounded-xl px-3 py-1 text-center">STATUS</span>
+            </div>
+        </div>
+        <div>
+            <div class="flex flex-col gap-3 mt-3">
+                <span class="border-t"></span>
+                {% for todo in todos %}
+                <div class="grid grid-cols-5 gap-2 py-4 px-4 items-center hover:bg-gray-50 cursor-pointer transition-colors"
+                     hx-get="{% url 'todo:todo_detail' todo.id %}"
+                     hx-target="#modalTODO"
+                     hx-swap="innerHTML"
+                     @click="slideOverOpen = true">
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-bold text-xl">{{ todo.title }}</h3>
+                        {% if todo.user.user == user %}
+                        <span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-xs rounded">Moi</span>
+                        {% endif %}
+                    </div>
+                    <p class="font-light col-span-2">{{ todo.description|truncatechars:50 }}</p>
+                    <div class="flex gap-1 items-center">
+
+                        <div class="flex -space-x-6">
+                            {% for responsable in todo.todo_colaborators.all|slice:":3" %}
+                            <div class="relative">
+                                <img class="w-12 h-12 rounded-full border-2 border-white shadow"
+                                     src="https://randomuser.me/api/portraits/men/32.jpg"
+                                     alt="{{ responsable.user.profile.last_name }}">
+                                {% if responsable.user == user %}
+                                <span class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></span>
+                                {% endif %}
+                            </div>
+                            {% empty %}
+                            <div class="w-12 h-12 rounded-full border-2 border-white shadow bg-gray-200 flex items-center justify-center">
+                                <span class="text-xs text-gray-500">?</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="block">
+                            <p class="text-sm text-end">
+                                {% for responsable in todo.todo_colaborators.all %}
+                                {{ responsable.user.profile.last_name }}{% if not forloop.last %}, {% endif %}
+                                {% empty %}
+                                Aucun responsable
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span>{{ todo.created_at|date:"d M Y à H:i" }}</span>
+                        {% if todo.status == 'pending' %}
+                            <span class="rounded-xl bg-yellow-300 px-3 py-0.5 text-sm text-center">En attente</span>
+                        {% elif todo.status == 'in_progress' %}
+                            <span class="rounded-xl bg-blue-300 px-3 py-0.5 text-sm text-center">En cours</span>
+                        {% elif todo.status == 'completed' %}
+                            <span class="rounded-xl bg-green-300 px-3 py-0.5 text-sm text-center">✅ Terminée</span>
+                        {% else %}
+                            <span class="rounded-xl bg-gray-300 px-3 py-0.5 text-sm text-center">{{ todo.status }}</span>
+                        {% endif %}
+                    </div>
+
+
+                </div>
+                <span class="border-t"></span>
+                {% empty %}
+                <div class="text-center py-8">
+                    <p class="text-gray-500">Aucune tâche trouvée</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button  @click="slideOverOpen=true" class=" px-4 py-3  w-full bg-zinc-200 hover:bg-zinc-300 font-bold">
+                <span class="text-lg pe-4 ">+</span>Créer une nouvelle tâche
+        </button>
+    </div>
+        <div
+            x-show="slideOverOpen"
+            @keydown.window.escape="slideOverOpen=false"
+            class="relative z-[99]">
+            <div x-show="slideOverOpen" x-transition.opacity.duration.600ms @click="slideOverOpen = false" class="fixed inset-0 bg-black bg-opacity-10"></div>
+            <div class="fixed inset-0 overflow-hidden">
+                <div class="absolute inset-0 overflow-hidden">
+                    <div class="fixed inset-y-0 right-0 flex max-w-full pl-10">
+                        <div 
+                            x-show="slideOverOpen" 
+                            @click.away="slideOverOpen = false"
+                            x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" 
+                            x-transition:enter-start="translate-x-full" 
+                            x-transition:enter-end="translate-x-0" 
+                            x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" 
+                            x-transition:leave-start="translate-x-0" 
+                            x-transition:leave-end="translate-x-full" 
+                            class="w-screen max-w-md">
+                            <div class="flex flex-col h-full py-5 overflow-y-scroll bg-white border-l shadow-lg border-neutral-100/70">
+                                <div class="px-4 sm:px-5">
+                                    <div class="flex items-start justify-between pb-1">
+                                        <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title"></h2>
+                                        <div class="flex items-center h-auto ml-3">
+                                            <button @click="slideOverOpen=false" type="button"
+                                             class="absolute top-0 right-0 z-30 flex items-center justify-center px-3 py-2 mt-4 mr-5 space-x-1 text-xs font-medium uppercase border rounded-md border-neutral-200 text-neutral-600 hover:bg-neutral-100">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                <span>Close</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="relative flex-1 px-4 mt-5 sm:px-5">
+                                    <div class="absolute inset-0 px-4 sm:px-5">
+                                            <div id="modalTODO">
+                                                {% include "todo/create_todo.html"  %}
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
+
+
+
+{% endblock content %}
+
+{% block js %}
+<script>
+    function handleFormSubmission(event) {
+    if (event.detail.successful) {
+      // La requête a réussi.  Accédez aux détails de la réponse si nécessaire.
+      // Par exemple:
+      const response = event.detail.xhr.response;
+      // this.message = response.message;
+    //   this.message = "Formulaire soumis avec succès!";
+    //   this.success = true;
+        console.log("tout ce pass bien", event.detail)
+
+        alert("tous c'est bien passer")
+
+       // Vous pouvez également accéder au composant Alpine.js en utilisant l'attribut 'this'.
+      // Assurez-vous que la fonction est appelée dans le bon contexte.
+    } else {
+        //La requête a échoué.  Gestion des erreurs.
+        this.message = "Erreur lors de la soumission du formulaire.";
+        this.success = false;
+        console.log("bien erreur verifier")
+    }
+  }
+</script>
+  
+{% endblock js %}

@@ -1,0 +1,524 @@
+{% extends "resume/base.html" %}
+
+{% block resume_content %}
+<div class="container mx-auto px-4 py-8" x-data="{ 
+    showHierarchieSlide: false, 
+    showCreateSlide: false,
+    showEditSlide: false,
+    editResumeId: null
+}">
+    <!-- Retour -->
+    <div class="mb-4">
+        <a href="{% url 'gestionbudget:budget_sheet_detail' budget_sheet.pid %}" 
+           class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Retour à la feuille de budget
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Rapports Journaliers</h1>
+                <p class="text-gray-600 mt-2">{{ budget_sheet.title }}</p>
+            </div>
+            <div class="flex gap-4">
+                {% if budget_sheet.user == request.user.profile %}
+                <button @click="showHierarchieSlide = true"
+                   class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+                    Gérer la hiérarchie
+                </button>
+                {% endif %}
+                <button @click="showCreateSlide = true"
+                   class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    Nouveau rapport
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mes résumés -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Mes rapports</h2>
+        
+        {% if my_resumes %}
+        <div class="grid gap-4">
+            {% for resume in my_resumes %}
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                            <a href="{% url 'resume:resume_detail' budget_sheet.pid resume.pid %}" 
+                               class="hover:text-blue-600">
+                                {{ resume.title }}
+                            </a>
+                        </h3>
+                        <p class="text-gray-600 mb-3">{{ resume.content|truncatewords:30|safe }}</p>
+                        <div class="flex items-center gap-4 text-sm text-gray-500">
+                            <span>📅 {{ resume.date_resume|date:"d/m/Y" }}</span>
+                            <span>🕒 {{ resume.created_at|date:"H:i" }}</span>
+                            {% if resume.destinataire %}
+                            <span>👤 → {{ resume.destinataire }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2 items-end">
+                        <span class="px-3 py-1 rounded-full text-sm font-medium
+                            {% if resume.status == 'draft' %}bg-gray-200 text-gray-700
+                            {% elif resume.status == 'submitted' %}bg-yellow-200 text-yellow-800
+                            {% elif resume.status == 'validated' %}bg-green-200 text-green-800
+                            {% elif resume.status == 'rejected' %}bg-red-200 text-red-800
+                            {% endif %}">
+                            {{ resume.get_status_display }}
+                        </span>
+                        {% if resume.status == 'draft' %}
+                        <button @click="showEditSlide = true; editResumeId = '{{ resume.pid }}'"
+                                class="text-sm text-blue-600 hover:text-blue-800">
+                            ✏️ Modifier
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+            <p>Aucun rapport créé pour le moment.</p>
+            <a href="{% url 'resume:resume_create' budget_sheet.pid %}" 
+               class="text-blue-600 hover:underline mt-2 inline-block">
+                Créer votre premier rapport
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Résumés reçus -->
+    <div>
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Rapports reçus (à valider)</h2>
+        
+        {% if received_resumes %}
+        <div class="grid gap-4">
+            {% for resume in received_resumes %}
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition border-l-4 
+                {% if resume.status == 'submitted' %}border-yellow-500
+                {% elif resume.status == 'validated' %}border-green-500
+                {% elif resume.status == 'rejected' %}border-red-500
+                {% endif %}">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                            <a href="{% url 'resume:resume_detail' budget_sheet.pid resume.pid %}" 
+                               class="hover:text-blue-600">
+                                {{ resume.title }}
+                            </a>
+                        </h3>
+                        <p class="text-gray-600 mb-3">{{ resume.content|truncatewords:30|safe }}</p>
+                        <div class="flex items-center gap-4 text-sm text-gray-500">
+                            <span>👤 De: {{ resume.author }}</span>
+                            <span>📅 {{ resume.date_resume|date:"d/m/Y" }}</span>
+                            <span>🕒 {{ resume.submitted_at|date:"H:i" }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium
+                            {% if resume.status == 'submitted' %}bg-yellow-200 text-yellow-800
+                            {% elif resume.status == 'validated' %}bg-green-200 text-green-800
+                            {% elif resume.status == 'rejected' %}bg-red-200 text-red-800
+                            {% endif %}">
+                            {{ resume.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+            <p>Aucun rapport reçu pour le moment.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Slide-over: Créer un rapport -->
+    <div x-show="showCreateSlide" 
+         x-cloak
+         class="fixed inset-0 overflow-hidden z-50" 
+         aria-labelledby="slide-over-title" 
+         role="dialog" 
+         aria-modal="true">
+        <div class="absolute inset-0 overflow-hidden">
+            <!-- Overlay -->
+            <div x-show="showCreateSlide"
+                 x-transition:enter="ease-in-out duration-500"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in-out duration-500"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                 @click="showCreateSlide = false"
+                 aria-hidden="true"></div>
+
+            <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
+                <div x-show="showCreateSlide"
+                     x-transition:enter="transform transition ease-in-out duration-500"
+                     x-transition:enter-start="translate-x-full"
+                     x-transition:enter-end="translate-x-0"
+                     x-transition:leave="transform transition ease-in-out duration-500"
+                     x-transition:leave-start="translate-x-0"
+                     x-transition:leave-end="translate-x-full"
+                     class="w-screen max-w-2xl">
+                    <div class="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+                        <!-- Header -->
+                        <div class="px-4 py-6 bg-teal-700 sm:px-6">
+                            <h2 class="text-lg font-medium text-white" id="slide-over-title">
+                                Créer un rapport
+                            </h2>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="flex-1 px-4 py-6 sm:px-6">
+                            <form method="post" action="{% url 'resume:resume_create' budget_sheet.pid %}">
+                                {% csrf_token %}
+                                
+                                <div class="space-y-6">
+                                    <!-- Titre -->
+                                    <div>
+                                        <label for="id_title" class="block text-sm font-medium text-gray-700">
+                                            Titre
+                                        </label>
+                                        <input type="text" 
+                                               name="title" 
+                                               id="id_title"
+                                               required
+                                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                                               placeholder="Titre du rapport">
+                                    </div>
+
+                                    <!-- Date -->
+                                    <div>
+                                        <label for="id_date_resume" class="block text-sm font-medium text-gray-700">
+                                            Date
+                                        </label>
+                                        <input type="date" 
+                                               name="date_resume" 
+                                               id="id_date_resume"
+                                               required
+                                               value="{{ today|date:'Y-m-d' }}"
+                                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
+                                    </div>
+
+                                    <!-- Contenu -->
+                                    <div>
+                                        <label for="id_content" class="block text-sm font-medium text-gray-700">
+                                            Contenu du rapport
+                                        </label>
+                                        <textarea name="content" 
+                                                  id="id_content"
+                                                  rows="10"
+                                                  required
+                                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm ckeditor"
+                                                  placeholder="Décrivez les activités et réalisations de la journée..."></textarea>
+                                        <p class="mt-2 text-sm text-gray-500">
+                                            💡 Décrivez les activités, réalisations et points importants de la journée
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="mt-6 flex gap-3">
+                                    <button type="submit"
+                                            class="flex-1 bg-teal-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                                        Créer le rapport
+                                    </button>
+                                    <button type="button"
+                                            @click="showCreateSlide = false"
+                                            class="flex-1 bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide-over: Gérer la hiérarchie -->
+    <div x-show="showHierarchieSlide" 
+         x-cloak
+         class="fixed inset-0 overflow-hidden z-50" 
+         role="dialog" 
+         aria-modal="true">
+        <div class="absolute inset-0 overflow-hidden">
+            <!-- Overlay -->
+            <div x-show="showHierarchieSlide"
+                 x-transition:enter="ease-in-out duration-500"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in-out duration-500"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                 @click="showHierarchieSlide = false"></div>
+
+            <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
+                <div x-show="showHierarchieSlide"
+                     x-transition:enter="transform transition ease-in-out duration-500"
+                     x-transition:enter-start="translate-x-full"
+                     x-transition:enter-end="translate-x-0"
+                     x-transition:leave="transform transition ease-in-out duration-500"
+                     x-transition:leave-start="translate-x-0"
+                     x-transition:leave-end="translate-x-full"
+                     class="w-screen max-w-2xl">
+                    <div class="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+                        <!-- Header -->
+                        <div class="px-4 py-6 bg-gray-700 sm:px-6">
+                            <h2 class="text-lg font-medium text-white">
+                                Gestion de la hiérarchie
+                            </h2>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="flex-1 px-4 py-6 sm:px-6">
+                            <!-- Utilisateurs liés à cette feuille -->
+                            <div class="mb-6">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">Utilisateurs de cette feuille</h3>
+                                
+                                {% if users_with_roles %}
+                                <div class="space-y-2">
+                                    {% for user_info in users_with_roles %}
+                                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 {% if user_info.is_owner %}bg-purple-100{% else %}bg-blue-100{% endif %} rounded-full flex items-center justify-center">
+                                                <span class="{% if user_info.is_owner %}text-purple-600{% else %}text-blue-600{% endif %} font-semibold">{{ user_info.user.user.username|slice:":1"|upper }}</span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-900">{{ user_info.user }}</p>
+                                                <p class="text-xs text-gray-500">{{ user_info.user.user.email }}</p>
+                                            </div>
+                                        </div>
+                                        <span class="px-3 py-1 text-xs font-medium rounded-full {% if user_info.is_owner %}bg-purple-100 text-purple-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                                            {{ user_info.role }}
+                                        </span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <p class="text-gray-500 text-center py-4">Aucun utilisateur</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Hiérarchie existante -->
+                            <div class="mb-6 border-t pt-6">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">Hiérarchie actuelle</h3>
+                                
+                                {% if hierarchies %}
+                                <div class="space-y-3">
+                                    {% for hierarchie in hierarchies %}
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                                <span class="text-blue-600 font-semibold">{{ hierarchie.user.user.username|slice:":1"|upper }}</span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-900">{{ hierarchie.user }}</p>
+                                                <p class="text-sm text-gray-500">{{ hierarchie.user.user.email }}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        {% if hierarchie.superieur %}
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-gray-400">→</span>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                                    <span class="text-green-600 font-semibold text-sm">{{ hierarchie.superieur.user.username|slice:":1"|upper }}</span>
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-900">{{ hierarchie.superieur }}</p>
+                                                    <p class="text-xs text-gray-500">Supérieur</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <span class="text-sm text-gray-400 italic">Pas de supérieur</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <p class="text-gray-500 text-center py-8">Aucune hiérarchie définie</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Formulaire d'ajout -->
+                            <div class="border-t pt-6">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">Ajouter une relation</h3>
+                                
+                                <form method="post" action="{% url 'resume:hierarchie_manage' budget_sheet.pid %}">
+                                    {% csrf_token %}
+                                    
+                                    <div class="space-y-4">
+                                        {% if users_with_roles %}
+                                        <div>
+                                            <label for="id_user" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Utilisateur
+                                            </label>
+                                            <select name="user" 
+                                                    id="id_user"
+                                                    required
+                                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm">
+                                                <option value="">Sélectionner un utilisateur</option>
+                                                {% for user_info in users_with_roles %}
+                                                <option value="{{ user_info.user.id }}">{{ user_info.user }} ({{ user_info.role }})</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="id_superieur" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Supérieur hiérarchique
+                                            </label>
+                                            <select name="superieur" 
+                                                    id="id_superieur"
+                                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm">
+                                                <option value="">Aucun supérieur</option>
+                                                {% for user_info in users_with_roles %}
+                                                <option value="{{ user_info.user.id }}">{{ user_info.user }} ({{ user_info.role }})</option>
+                                                {% endfor %}
+                                            </select>
+                                            <p class="mt-2 text-sm text-gray-500">
+                                                💡 Laissez vide si l'utilisateur n'a pas de supérieur
+                                            </p>
+                                        </div>
+                                        {% else %}
+                                        <p class="text-gray-500 text-sm">Aucun utilisateur disponible pour créer une hiérarchie.</p>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="mt-6">
+                                        <button type="submit"
+                                                class="w-full bg-gray-700 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                                            Ajouter la relation
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide-over: Modifier un rapport -->
+    {% for resume in my_resumes %}
+    {% if resume.status == 'draft' %}
+    <div x-show="showEditSlide && editResumeId === '{{ resume.pid }}'" 
+         x-cloak
+         class="fixed inset-0 overflow-hidden z-50" 
+         role="dialog" 
+         aria-modal="true">
+        <div class="absolute inset-0 overflow-hidden">
+            <!-- Overlay -->
+            <div x-show="showEditSlide"
+                 x-transition:enter="ease-in-out duration-500"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in-out duration-500"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                 @click="showEditSlide = false"></div>
+
+            <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
+                <div x-show="showEditSlide"
+                     x-transition:enter="transform transition ease-in-out duration-500"
+                     x-transition:enter-start="translate-x-full"
+                     x-transition:enter-end="translate-x-0"
+                     x-transition:leave="transform transition ease-in-out duration-500"
+                     x-transition:leave-start="translate-x-0"
+                     x-transition:leave-end="translate-x-full"
+                     class="w-screen max-w-2xl">
+                    <div class="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+                        <!-- Header -->
+                        <div class="px-4 py-6 bg-blue-600 sm:px-6">
+                            <h2 class="text-lg font-medium text-white">
+                                Modifier le rapport
+                            </h2>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="flex-1 px-4 py-6 sm:px-6">
+                            <form method="post" action="{% url 'resume:resume_edit' budget_sheet.pid resume.pid %}">
+                                {% csrf_token %}
+                                
+                                <div class="space-y-6">
+                                    <!-- Titre -->
+                                    <div>
+                                        <label for="id_title_edit_{{ resume.pid }}" class="block text-sm font-medium text-gray-700">
+                                            Titre
+                                        </label>
+                                        <input type="text" 
+                                               name="title" 
+                                               id="id_title_edit_{{ resume.pid }}"
+                                               value="{{ resume.title }}"
+                                               required
+                                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    </div>
+
+                                    <!-- Date -->
+                                    <div>
+                                        <label for="id_date_resume_edit_{{ resume.pid }}" class="block text-sm font-medium text-gray-700">
+                                            Date
+                                        </label>
+                                        <input type="date" 
+                                               name="date_resume" 
+                                               id="id_date_resume_edit_{{ resume.pid }}"
+                                               value="{{ resume.date_resume|date:'Y-m-d' }}"
+                                               required
+                                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    </div>
+
+                                    <!-- Contenu -->
+                                    <div>
+                                        <label for="id_content_edit_{{ resume.pid }}" class="block text-sm font-medium text-gray-700">
+                                            Contenu du rapport
+                                        </label>
+                                        <textarea name="content" 
+                                                  id="id_content_edit_{{ resume.pid }}"
+                                                  rows="10"
+                                                  required
+                                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ckeditor">{{ resume.content }}</textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="mt-6 flex gap-3">
+                                    <button type="submit"
+                                            class="flex-1 bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        Enregistrer
+                                    </button>
+                                    <button type="button"
+                                            @click="showEditSlide = false"
+                                            class="flex-1 bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock %}

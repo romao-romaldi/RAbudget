@@ -1,0 +1,175 @@
+<div x-data="{ stepPersonne: 1, voirPlus: false}">
+    <div class="grid grid-cols-3 px-10 my-3" >
+        <div class="col-span-1 flex flex-col gap-1 justify-start"
+        >
+            <div class="flex  items-center">
+                <span class="h-7 w-7 rounded-full bg-gray-300 flex justify-center items-center text-center"
+                :class="{'bg-blue-500 text-white': stepPersonne > 0 }">
+                    1
+                </span>
+                <span class="h-1 min-w-[calc(100%-1.75rem)] bg-gray-300 "
+                :class="{'bg-blue-500 text-white': stepPersonne > 1 }">
+                </span>
+            </div>
+            <h6 class=" text-sm">INFORMATION</h6>
+        </div>
+        <div class="col-span-1 flex flex-col gap-1 justify-start">
+            <div class="flex  items-center w-full">
+                <span class="h-7 w-7 rounded-full bg-gray-300 flex justify-center items-center text-center"
+                :class="{'bg-blue-500 text-white': stepPersonne > 1, }">
+                    2
+                </span>
+                <span class="h-1 min-w-[calc(100%-1.75rem)] bg-gray-300 "
+                :class="{'bg-blue-500 text-white': stepPersonne > 2 }">
+                </span>
+            </div>
+            <h6 class="pr-4 text-sm">CONTACTS LIÉS</h6>
+        </div>
+        <div class="col-span-1 flex flex-col gap-1 justify-start">
+            <div class="flex  items-center">
+                <span class="h-7 w-7 rounded-full bg-gray-300 flex justify-center items-center text-center"
+                :class="{'bg-blue-500 text-white': stepPersonne > 2}">
+                    3
+                </span>
+            </div>
+            <h6 class=" text-sm">FACTURATION</h6>
+        </div>
+    </div>
+
+    <div class=""  >
+        <form action="" class="flex gap-5 px-3 py-2 flex-nowrap
+        ">
+                <div class="flex flex-col gap-4 w-full min-h-80"
+                >
+                    <div x-show="stepPersonne === 1" 
+                    class="min-w-full flex flex-col gap-3 justify-between"
+                    >   
+                        <div class="flex flex-col gap-3 w-full">
+                            <div class="w-full">
+                                <input type="text" placeholder="Organisation"
+                                class="rounded-md border border-slate-800 w-full">
+                            </div>
+
+                            <div class="w-full">
+                                <input type="text" placeholder="Titre"
+                                class="rounded-md border border-slate-800 w-full">
+                            </div>
+                
+                            <div class="w-full">
+                                <input type="text" placeholder="Nom"
+                                class="rounded-md border border-slate-800 w-full">
+                            </div>
+                
+                            <div class="w-full">
+                                <input type="text" placeholder="Prénom"
+                                class="rounded-md border border-slate-800 w-full">
+                            </div>
+                
+                            
+                
+                            <div x-data="" >
+                                <button type="button" class="text-blue-800"                
+                                @click="voirPlus = !voirPlus">Voir plus de champs</button>
+                
+                                <div>
+                                    <template x-if="true">
+                                        <div x-show="voirPlus">
+                                            je suis un champ supplémentaire
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <div class="flex justify-end items-center">
+                            <button type="button" class="bg-blue-800 
+                            hover:bg-blue-500 text-white px-4 py-1 text-lg rounded-md"
+                            @click="stepPersonne=2">
+                                Suivant
+                            </button>
+                        </div>
+                    </div>
+                
+                    <div x-show="stepPersonne === 2"
+                    class="min-w-full h-full flex flex-col gap-3 justify-between"
+                    
+                    >   
+                        <div class="flex flex-col gap3">
+                            <div class="w-full grid grid-cols-5 gap-2">
+                                <select type="text" placeholder="Entrer le nom du contact lier"
+                                class="rounded-md border border-slate-800 col-span-3 ">
+                                    <option ></option>
+            
+                                </select>
+                                 <select type="text" placeholder="Rôle"
+                                class="rounded-md border border-slate-800">
+                                    <option value=""></option>
+            
+                                </select>
+            
+                                <div class="flex justify-end items-center">
+                                    <button type="submit" class="border border-blue-800
+                                    hover:bg-blue-500 text-blue-800 hover:text-white px-2 py-1 text-lg rounded-md">Suivant
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="flex justify-between items-center mt-3">
+                            <button type="button" class="border border-blue-800 
+                            hover:bg-blue-500 px-4 py-1 text-lg rounded-md"
+                            @click="stepPersonne--">Précédent
+                            </button>
+        
+                            <button type="button" class="bg-blue-800 
+                            hover:bg-blue-500 text-white px-4 py-1 text-lg rounded-md"
+                            @click="stepPersonne++">Suivant
+                            </button>
+                        </div>
+        
+                    </div>
+
+                    <div x-show="stepPersonne === 3"
+                    class="min-w-full h-full flex flex-col gap-3 justify-between"
+                    
+                    >   
+                        <div class="flex flex-col gap3">
+                            <div class="w-full grid grid-cols-5 gap-2">
+                                <select type="text" placeholder="Entrer le nom du contact lier"
+                                class="rounded-md border border-slate-800 col-span-3 ">
+                                    <option value=""></option>
+            
+                                </select>
+                                 <select type="text" placeholder="Rôle"
+                                class="rounded-md border border-slate-800">
+                                    <option value=""></option>
+            
+                                </select>
+            
+                                <div class="flex justify-end items-center">
+                                    <button type="submit" class="border border-blue-800
+                                    hover:bg-blue-500 text-blue-800 hover:text-white px-2 py-1 text-lg rounded-md">Suivant
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="flex justify-between items-center mt-3">
+                            <button type="button" class="border border-blue-800 
+                            hover:bg-blue-500 px-4 py-1 text-lg rounded-md"
+                            @click="stepPersonne--">Précédent
+                            </button>
+        
+                            <button type="button" class="bg-blue-800 
+                            hover:bg-blue-500 text-white px-4 py-1 text-lg rounded-md"
+                            @click="stepPersonne++">Suivant
+                            </button>
+                        </div>
+        
+                    </div>
+                </div>
+          
+           
+        </form>
+    </div>
+</div>
