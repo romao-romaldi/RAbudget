@@ -45,9 +45,9 @@ INSTALLED_APPS = [
     "todo",
     "gestionbuget",
     "resume",
-    "lawyer",
-    "gestiondoc",
-    "gestiontimer",
+    # "lawyer",
+    # "gestiondoc",
+    # "gestiontimer",
     #"cabinet",
 
     # external apps
