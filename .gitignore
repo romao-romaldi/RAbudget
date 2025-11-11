@@ -7,7 +7,7 @@ gestiontimer/*
 lawyer
 lawyer/*
 gestiondoc
-gestiondoc/*
+gestiondoc/** /*
 .DS_Store
 Thumbs.db
 .vscode/
